@@ -36,6 +36,11 @@ describe('appearance colours', () => {
       const c = paperColors(s);
       expect(c.inkRatio).toBeGreaterThanOrEqual(7);
       expect(c.softRatio).toBeGreaterThanOrEqual(7);
+      // The CV sheet: lighter than the page, same tone, text still at AAA.
+      const [paper, sheet, soft] = [c.paper, c.sheet, c.vars['--ink-soft']].map((x) => parseHex(x)!);
+      expect(toOklch(sheet).L).toBeGreaterThanOrEqual(toOklch(paper).L);
+      if (toOklch(paper).C > 0.01) expect(Math.abs(toOklch(sheet).H - toOklch(paper).H)).toBeLessThan(6);
+      expect(contrast(soft, sheet)).toBeGreaterThanOrEqual(7);
     }
   });
 

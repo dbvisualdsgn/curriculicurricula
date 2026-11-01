@@ -30,6 +30,8 @@ const COOL: RGB = [245, 246, 243];
 const NEUTRAL: RGB = [236, 234, 229];
 const WARM: RGB = [236, 221, 191];
 const YELLOW = '#e6f05a';
+/** How much lighter the CV sheet is than the page (toward white, same tone). */
+export const SHEET_LIFT = 0.3;
 /** Minimum contrast for every text colour on the paper (AAA). */
 const AAA = 7;
 /** Coloured ink sits above that, so secondary text (a lighter mix of the ink) can still reach AAA. */
@@ -179,6 +181,7 @@ function base(settings: PaperSettings): { paper: RGB; ink: RGB; highlight: strin
 export function paperColors(settings: PaperSettings) {
   const { paper, ink, highlight, photo } = base(settings);
   const inkSoft = textOn(paper, AAA + 0.2, 0.55, ink);
+  const sheet = mix(paper, WHITE, SHEET_LIFT);
   const vars: Record<string, string> = {
     '--paper': hex(paper),
     '--ink': hex(ink),
@@ -187,6 +190,8 @@ export function paperColors(settings: PaperSettings) {
     '--ink-soft': hex(inkSoft),
     '--rule': hex(mix(paper, ink, 0.16)),
     '--panel': hex(mix(paper, WHITE, 0.55)),
+    // The CV sheet: the same tone as the page, 30% closer to white, so the CV always reads as the lightest thing on it.
+    '--sheet': hex(sheet),
     '--color-zinc-50': hex(mix(paper, ink, 0.035)),
     '--color-zinc-100': hex(mix(paper, ink, 0.07)),
     '--color-zinc-200': hex(mix(paper, ink, 0.16)),
@@ -197,10 +202,10 @@ export function paperColors(settings: PaperSettings) {
     '--color-zinc-700': hex(textOn(paper, 9, 0.7, ink)),
     '--color-zinc-950': hex(ink),
   };
-  return { vars, photo, paper: hex(paper), ink: hex(ink), inkRatio: contrast(ink, paper), softRatio: contrast(inkSoft, paper) };
+  return { vars, photo, paper: hex(paper), sheet: hex(sheet), ink: hex(ink), inkRatio: contrast(ink, paper), softRatio: contrast(inkSoft, paper) };
 }
 
-/** An SVG filter that maps a photo's shadows to the ink and its lights to the paper. Kept in the page body. */
+/** An SVG filter that maps a photo's shadows to the ink and its lights to the CV sheet. Kept in the page body. */
 function updateDuotone(ink: string, paper: string) {
   const [a, b] = [parseHex(ink)!, parseHex(paper)!];
   const NS = 'http://www.w3.org/2000/svg';
@@ -222,11 +227,11 @@ function updateDuotone(ink: string, paper: string) {
 }
 
 export function applyPaper(settings: PaperSettings) {
-  const { vars, paper, ink, photo } = paperColors(settings);
+  const { vars, paper, sheet, ink, photo } = paperColors(settings);
   const root = document.documentElement;
   for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
   root.dataset.photo = photo;
-  updateDuotone(ink, paper);
+  updateDuotone(ink, sheet);
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', paper);
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
@@ -271,5 +276,6 @@ export function currentPaper() {
   const s = getComputedStyle(document.documentElement);
   const get = (name: string, fallback: string) => s.getPropertyValue(name).trim() || fallback;
   const photo = (document.documentElement.dataset.photo as PhotoEffect | undefined) ?? 'gray';
-  return { paper: get('--paper', '#ECEAE5'), ink: get('--ink', '#111111'), soft: get('--ink-soft', '#45433F'), rule: get('--rule', '#CFCCC5'), photo };
+  // The PDF is the CV sheet, so its page takes the sheet colour.
+  return { paper: get('--sheet', '#F2F0ED'), ink: get('--ink', '#111111'), soft: get('--ink-soft', '#45433F'), rule: get('--rule', '#CFCCC5'), photo };
 }
