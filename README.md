@@ -6,17 +6,18 @@ The original design is available at https://www.figma.com/design/68PhbcZDT2IDB8n
 
 ## Pages
 
-- `/` is the homepage (`index.html` → `src/home/`): claim, subtitle and hero CVs, example CVs, how it works, recruiter
-  check, private or shared, quick answers.
+- `/` is the homepage (`index.html` → `src/home/`): claim and desk hero, how it works (the recruiter check and job-ad
+  tips appear only as extras), private or shared, example CVs, quick answers.
 - `/app/` is the CV tool (`app/index.html` → `src/app/`). `app/?new=1` starts writing and `app/?person=<id>` opens an example CV.
   Old `app/?example=1` links go to `/people/`. `app/#cv=…` opens a shared CV, read-only.
 - `/people/` lists example CVs (`people/index.html` → `src/people/`), filtered by level (first job, experienced, senior and lead)
   and by field. The 34 profiles in `src/app/cv/people.ts` are fictional: from waiter, rider and student to head chef and CTO.
-- `/why/` explains why the project exists (`why/index.html` → `src/why/`): one person's passport, driving licence and CV,
-  animated (paused by a button, still under reduced motion), then the idea, what it does and doesn't do,
-  your data, and who it's for.
+- `/why/` explains why the project exists (`why/index.html` → `src/why/`): a CV should be a standard format, not a
+  design project. Then one person's passport, driving licence and CV, animated (paused by a button, still under
+  reduced motion), what it does and doesn't do, your data, and who it's for.
 - `/about/` is about who made it (`about/index.html` → `src/about/`), told in the third person, with a black-and-white
-  portrait (`public/about/daniele.jpg`). Parts shared with `/why/` live in `src/why/parts.tsx`.
+  portrait (`public/about/daniele.jpg`). It is not in the menu: every site page's footer (`SiteFooter`) shows a short
+  CV of its maker (photo, one line, email, LinkedIn) and links to it. Parts shared with `/why/` live in `src/why/parts.tsx`.
 
 **My CVs:** keep several CVs in the same browser (`src/app/cv/library.ts`). Switch, create and delete them from the
 "My CVs" menu and the editor. An older single CV is migrated automatically.

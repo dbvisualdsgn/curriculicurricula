@@ -1,6 +1,5 @@
 // Building blocks shared by the Why and About pages.
-import { ArrowRight, Github } from 'lucide-react';
-import { Wordmark } from '../app/components/Wordmark';
+import { ArrowRight } from 'lucide-react';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
 
@@ -31,15 +30,15 @@ export function WithName({ text }: { text: string }) {
   );
 }
 
-/** A numbered part of the page: number and title on the left, the text on the right. */
-export function Part({ id, n, title, children }: { id: string; n: number; title: string; children: React.ReactNode }) {
+/** A part of the page: title (and number, if given) on the left, the text on the right. */
+export function Part({ id, n, title, children }: { id: string; n?: number; title: string; children: React.ReactNode }) {
   const ref = useReveal<HTMLElement>(0.12);
   return (
     <section ref={ref} aria-labelledby={id} className="reveal border-t border-ink">
       <div className={`${wrap} grid gap-8 py-16 md:py-24 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16`}>
         <div>
-          <p className="font-title text-[72px] leading-none md:text-[112px]" aria-hidden="true">{n}.</p>
-          <h2 id={id} className="mt-6 font-title text-3xl leading-[1.05] hyphens-auto [overflow-wrap:anywhere] md:text-5xl">{title}</h2>
+          {n !== undefined && <p className="mb-6 font-title text-[72px] leading-none md:text-[112px]" aria-hidden="true">{n}.</p>}
+          <h2 id={id} className="font-title text-3xl leading-[1.05] hyphens-auto [overflow-wrap:anywhere] md:text-5xl">{title}</h2>
         </div>
         <div className="min-w-0 lg:pt-4">{children}</div>
       </div>
@@ -66,19 +65,3 @@ export function Closing({ root }: { root: string }) {
 }
 
 export const GITHUB_URL = 'https://github.com/dbvisualdsgn/Careerpath';
-
-export function PageFooter({ root }: { root: string }) {
-  const { m } = useI18n();
-  return (
-    <footer className="border-t border-ink">
-      <div className={`${wrap} flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between`}>
-        <Wordmark href={root} />
-        <p className="font-body text-[15px] text-ink-soft">{m.home.footer}</p>
-        <a href={GITHUB_URL} className={textLink} rel="noopener noreferrer" target="_blank">
-          <Github size={20} aria-hidden="true" />
-          {m.home.source}
-        </a>
-      </div>
-    </footer>
-  );
-}

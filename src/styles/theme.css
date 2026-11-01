@@ -375,15 +375,7 @@
 .gallery-row:has(:focus-visible) .gallery-track { animation: none; transform: none; }
 .gallery-row:has(:focus-visible) .gallery-copy { display: none; }
 
-@media (prefers-reduced-motion: no-preference) {
-  /* A line of words drifting across the page, drawn twice for a seamless loop. */
-  @keyframes ticker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .ticker-track { animation: ticker 45s linear infinite; }
-}
-[data-paused] .docs *, [data-paused] .ticker-track { animation-play-state: paused !important; }
+[data-paused] .docs * { animation-play-state: paused !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .gallery-track { animation: none !important; transform: none; }
