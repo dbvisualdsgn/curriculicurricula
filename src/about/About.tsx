@@ -4,7 +4,8 @@ import { SiteHeader } from '../app/components/SiteHeader';
 import { Portrait } from '../app/components/Portrait';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
-import { Closing, GITHUB_URL, PageFooter, Part, WithName, body, label, textLink, wrap } from '../why/parts';
+import { SiteFooter } from '../app/components/SiteFooter';
+import { Closing, GITHUB_URL, Part, WithName, body, label, textLink, wrap } from '../why/parts';
 
 const NAME = 'Daniele Brusca';
 
@@ -77,7 +78,7 @@ export function About() {
         <Closing root="../" />
       </main>
 
-      <PageFooter root="../" />
+      <SiteFooter root="../" onAbout />
     </div>
   );
 }

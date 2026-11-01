@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ArrowUpRight, Check, ClipboardPaste, EyeOff, Github, Link2, ListChecks, Lock, Monitor, PenLine, Share2, Users, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, ArrowUpRight, EyeOff, FileUp, Files, Link2, Lock, Monitor, Share2, Sparkles, UserRound, Users, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
-import { Wordmark } from '../app/components/Wordmark';
-import { matchKeywords, runAtsCheck } from '../app/cv/atsCheck';
-import { findPerson } from '../app/cv/people';
+import { SiteFooter } from '../app/components/SiteFooter';
 import { useI18n } from '../app/i18n';
-import { useCountUp, useReveal } from '../app/hooks/useReveal';
+import { useReveal } from '../app/hooks/useReveal';
 import { CVGallery } from './CVGallery';
 import { DeskHero } from './desk/DeskHero';
 
@@ -14,13 +12,6 @@ const label = 'font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
 const primaryBtn = 'nudge inline-flex h-12 items-center gap-3 rounded-sm bg-ink px-5 text-[15px] font-medium text-paper hover:opacity-90';
 const textLink = 'inline-flex items-center gap-1.5 text-[15px] text-ink underline decoration-1 underline-offset-[6px] hover:decoration-2';
 const h2 = 'font-title text-3xl font-normal tracking-[-0.02em] md:text-5xl';
-
-// The live demo runs on one of the example CVs, against a short job ad that fits it.
-// The score and the keyword match below are computed by the real recruiter check.
-const DEMO_CV = findPerson('sofia-andersson')!.cv;
-const DEMO_AD =
-  'UX Researcher. You will run user interviews, usability testing and survey design, and work with product teams on accessibility. ' +
-  'Experience with journey mapping, quantitative analysis and service design is key.';
 
 function Chapter({ id, title, n, children, wide }: { id: string; title: string; n: number; children: React.ReactNode; wide?: React.ReactNode }) {
   const { m } = useI18n();
@@ -41,68 +32,6 @@ function Chapter({ id, title, n, children, wide }: { id: string; title: string; 
 }
 
 /** The real ATS check, shown on the example CV: criteria, score meter, and the keyword match. */
-function AtsInfographic() {
-  const { m, locale } = useI18n();
-  const h = m.homeX;
-  const report = useMemo(() => runAtsCheck(DEMO_CV, locale), [locale]);
-  const match = useMemo(() => matchKeywords(DEMO_CV, DEMO_AD, 'en'), []);
-  const ref = useReveal<HTMLDivElement>(0.25);
-  const shown = useCountUp(report.score, 1100);
-  const checks = [h.c1, h.c2, h.c3, h.c4, h.c5, h.c6];
-  const steps = 20;
-  const filled = Math.round((report.score / 100) * steps);
-  return (
-    <div ref={ref} className="on-ink mt-12 grid gap-px bg-rule lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-      <div className="bg-paper p-6 md:p-10">
-        <p className="max-w-[34ch] font-body text-lg leading-snug text-ink-soft">{h.atsLead}</p>
-        <ol className="mt-8 border-t border-ink">
-          {checks.map((c, i) => (
-            <li key={c} className="flex items-baseline gap-4 border-b border-rule py-3 font-body text-lg">
-              <span className="font-mono text-[11px] text-ink-soft" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-              <span className="flex-1">{c}</span>
-              <Check size={20} aria-hidden="true" className="text-go" />
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div className="flex flex-col gap-8 bg-paper p-6 md:p-10">
-        <div>
-          <p className={label}>{m.atsCard.title} · {DEMO_CV.profile.name}</p>
-          <p className="mt-3 font-title leading-none">
-            <span className="text-[88px] tracking-[-0.04em] tabular-nums" aria-hidden="true">{shown}</span>
-            <span className="sr-only">{report.score}</span>
-            <span className="font-mono text-[14px] text-ink-soft">/100</span>
-          </p>
-          <div className="mt-4 grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px]" aria-hidden="true">
-            {Array.from({ length: steps }, (_, i) => (
-              <span key={i} className={`bar-grow h-2.5 ${i < filled ? 'bg-ink' : 'bg-rule'}`} style={{ transitionDelay: `${200 + i * 30}ms` }} />
-            ))}
-          </div>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div>
-            <p className={label}>{h.jobAd}</p>
-            <p className="mt-3 font-body text-[15px] leading-relaxed text-ink-soft">“{DEMO_AD.slice(0, 160)}…”</p>
-          </div>
-          <div>
-            <p className={label}>{h.yourCv} · {match.matched.length} {h.matched} · {match.missing.length} {h.missing}</p>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {match.matched.slice(0, 6).map((k) => (
-                <li key={k} className="inline-flex items-center gap-1 rounded-full border border-ink bg-highlight px-2.5 py-1 font-body text-[13px] italic text-[#111]">
-                  {k} <Check size={20} />
-                </li>
-              ))}
-              {match.missing.slice(0, 5).map((k) => (
-                <li key={k} className="rounded-full border border-dashed border-ink px-2.5 py-1 text-[13px]">{k} +</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 type Mode = 'private' | 'link';
 
 
@@ -229,14 +158,13 @@ export function Home() {
   }, [m.app.name, h.kicker]);
 
   const steps = [
-    { icon: PenLine, title: h.s1t, body: h.s1 },
-    { icon: ClipboardPaste, title: h.s2t, body: h.s2 },
-    { icon: ListChecks, title: h.s3t, body: h.s3 },
+    { icon: FileUp, title: h.s1t, body: h.s1 },
+    { icon: UserRound, title: h.s2t, body: h.s2 },
+    { icon: Files, title: h.s3t, body: h.s3 },
     { icon: Share2, title: h.s4t, body: h.s4 },
   ];
   const faq = [
     [h.q1, h.a1],
-    [h.q2, h.a2],
     [h.q3, h.a3],
     [h.q4, h.a4],
   ];
@@ -270,22 +198,7 @@ export function Home() {
           <DeskHero />
         </section>
 
-        <Chapter
-          id="people"
-          title={m.homeX.peopleTitle}
-          n={1}
-          wide={<CVGallery />}
-        >
-          <div className="mt-6 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-            <p className="max-w-[52ch] font-body text-lg text-ink-soft">{m.directory.examples}</p>
-            <a href="people/" className={`nudge ${textLink}`}>
-              {m.homeX.peopleMore}
-              <ArrowRight size={20} aria-hidden="true" />
-            </a>
-          </div>
-        </Chapter>
-
-        <Chapter id="how" title={h.howTitle} n={2}>
+        <Chapter id="how" title={h.howTitle} n={1}>
           <ol className="mt-12 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
             {steps.map(({ icon: Icon, title, body }, i) => (
               <li key={title} className="flex flex-col bg-paper p-6 md:p-8">
@@ -300,17 +213,33 @@ export function Home() {
               </li>
             ))}
           </ol>
+          {/* The core is the CV itself; the check and the job-ad tips are extras. */}
+          <p className="mt-8 flex max-w-[60ch] items-start gap-2.5 font-body text-lg text-ink-soft">
+            <Sparkles size={20} aria-hidden="true" className="mt-1 shrink-0" />
+            {h.extras}
+          </p>
         </Chapter>
 
-        <Chapter id="ats" title={m.homeX.atsTitle} n={3}>
-          <AtsInfographic />
-        </Chapter>
-
-        <Chapter id="privacy" title={h.privacyTitle} n={4}>
+        <Chapter id="privacy" title={h.privacyTitle} n={2}>
           <PrivacyTabs />
         </Chapter>
 
-        <Chapter id="faq" title={h.faqTitle} n={5}>
+        <Chapter
+          id="people"
+          title={m.homeX.peopleTitle}
+          n={3}
+          wide={<CVGallery />}
+        >
+          <div className="mt-6 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <p className="max-w-[52ch] font-body text-lg text-ink-soft">{m.directory.examples}</p>
+            <a href="people/" className={`nudge ${textLink}`}>
+              {m.homeX.peopleMore}
+              <ArrowRight size={20} aria-hidden="true" />
+            </a>
+          </div>
+        </Chapter>
+
+        <Chapter id="faq" title={h.faqTitle} n={4}>
           <dl className="mt-12 border-t border-ink">
             {faq.map(([q, a]) => (
               <div key={q} className="grid gap-1 border-b border-rule py-5 sm:grid-cols-2 sm:gap-6">
@@ -335,20 +264,7 @@ export function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-ink">
-        <div className="mx-auto flex max-w-6xl xl:max-w-none xl:px-12 flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <Wordmark href="./" />
-          <p className="font-body text-[15px] text-ink-soft">{h.footer}</p>
-          <a href="why/" className={`nudge ${textLink}`}>
-            {m.why.kicker}
-            <ArrowRight size={20} aria-hidden="true" />
-          </a>
-          <a href="https://github.com/dbvisualdsgn/Careerpath" className={textLink} rel="noopener noreferrer" target="_blank">
-            <Github size={20} aria-hidden="true" />
-            {h.source}
-          </a>
-        </div>
-      </footer>
+      <SiteFooter root="./" />
     </div>
   );
 }

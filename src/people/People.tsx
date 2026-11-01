@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Info, Plus, Search, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
 import { CVCard } from '../app/components/CVCard';
-import { Wordmark } from '../app/components/Wordmark';
+import { SiteFooter } from '../app/components/SiteFooter';
 import { fields, levels, people, type Field, type Level } from '../app/cv/people';
 import { useReveal } from '../app/hooks/useReveal';
 import { fmt, useI18n } from '../app/i18n';
@@ -119,12 +119,7 @@ export function People() {
         )}
       </main>
 
-      <footer className="border-t border-ink">
-        <div className="mx-auto flex max-w-6xl xl:max-w-none xl:px-12 flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <Wordmark href="../" />
-          <p className="font-body text-[15px] text-ink-soft">{m.home.footer}</p>
-        </div>
-      </footer>
+      <SiteFooter root="../" />
     </div>
   );
 }

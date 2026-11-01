@@ -8,6 +8,12 @@
 - The link shows your CV as it is now. Changed it? Share a new link.
 - The examples page is now called Example CVs.
 
+### Humbler, and to the point
+- The homepage says what the tool is: a clear CV in one standard format, from a PDF you have or a blank page.
+- How it works comes first, then private or shared, then the examples. The recruiter check and job-ad tips are extras.
+- The Why page tells one idea: a CV should be a standard format, not a design project. No moving words, no counters.
+- Who made it is now in the footer, as a short CV with email and LinkedIn. About is no longer in the menu.
+
 ### More examples, and an About page
 - 34 example CVs, from first jobs to senior roles: waiter, delivery rider, student, care assistant, bus driver, head chef, CTO and more.
 - Filter the examples by level: first job, experienced, or senior and lead.

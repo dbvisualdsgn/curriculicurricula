@@ -20,7 +20,6 @@ export function SiteHeader({ root, current }: { root: string; current?: 'home' |
 
   const links = [
     { href: `${root}why/`, label: m.why.nav, page: 'why' },
-    { href: `${root}about/`, label: m.about.nav, page: 'about' },
     { href: `${root}people/`, label: m.directory.nav, page: 'people' },
   ] as const;
 

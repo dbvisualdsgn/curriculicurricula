@@ -1,37 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Accessibility, ArrowRight, Github, Languages, Link2, Lock, Pause, Play, Smartphone, X } from 'lucide-react';
+import { Accessibility, Github, Languages, Link2, Lock, Pause, Play, Smartphone, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
 import { Documents } from './Documents';
-import { Closing, PageFooter, Part, WithName, body, label, textLink, wrap } from './parts';
+import { SiteFooter } from '../app/components/SiteFooter';
+import { Closing, Part, WithName, body, label, wrap } from './parts';
 
 const reducedMotion = () => Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-
-/** Words drifting across the page, between the opening and the documents. Decorative: the same words are on the page. */
-function Ticker() {
-  const { m } = useI18n();
-  const w = m.why;
-  const words = [w.passport, w.licence, w.cv, w.once, w.forAll];
-  const line = (
-    <span className="flex shrink-0 items-center">
-      {words.map((t) => (
-        <span key={t} className="flex items-center">
-          <span className="px-6 md:px-10">{t}</span>
-          <span className="text-ink-soft">*</span>
-        </span>
-      ))}
-    </span>
-  );
-  return (
-    <div aria-hidden="true" className="overflow-hidden border-y border-ink py-4 font-title text-3xl leading-none md:text-5xl">
-      <div className="ticker-track flex w-max whitespace-nowrap">
-        {line}
-        {line}
-      </div>
-    </div>
-  );
-}
 
 export function Why() {
   const { m } = useI18n();
@@ -75,14 +51,22 @@ export function Why() {
             <h1 className="max-w-[16ch] font-title text-[clamp(2.25rem,8vw,3.75rem)] font-normal leading-[0.95] hyphens-auto [overflow-wrap:break-word] md:text-[clamp(3rem,6.5vw,7rem)] md:hyphens-manual">
               {w.title}
             </h1>
-            <p className="mt-10 max-w-[30ch] font-body text-2xl leading-snug md:text-3xl">{w.lead}</p>
+            {/* The idea, said once: passport and licence are standard, the CV should be too. */}
+            <div className="mt-12 max-w-[46ch] space-y-5">
+              <p className="font-body text-2xl leading-snug md:text-3xl">{w.intro1}</p>
+              <p className={body}>{w.intro2}</p>
+              <p className={body}>{w.intro3}</p>
+            </div>
+            <p className="mt-10 font-title text-2xl leading-tight md:text-4xl">
+              <span className="hl">
+                <WithName text={w.idea3} />
+              </span>
+            </p>
           </div>
         </section>
 
-        <Ticker />
-
         {/* One person, three documents */}
-        <section aria-labelledby="docs" className={`${wrap} py-16 md:py-24`}>
+        <section aria-labelledby="docs" className={`border-t border-ink ${wrap} py-16 md:py-24`}>
           <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
             <div>
               <h2 id="docs" className="font-title text-3xl leading-[1.05] md:text-5xl">{w.docsTitle}</h2>
@@ -100,24 +84,9 @@ export function Why() {
             )}
           </div>
           <Documents />
-          <p className="mt-6 font-body text-[15px] text-ink-soft">{w.docsNote}</p>
         </section>
 
-        <Part id="idea" n={1} title={w.ideaTitle}>
-          <p className="max-w-[34ch] font-body text-2xl leading-snug md:text-3xl">{w.idea1}</p>
-          <p className={`mt-6 ${body}`}>{w.idea2}</p>
-          <p className="mt-10 font-title text-2xl leading-tight md:text-4xl">
-            <span className="hl">
-              <WithName text={w.idea3} />
-            </span>
-          </p>
-          <a href="../about/" className={`nudge mt-10 ${textLink}`}>
-            {w.aboutLink}
-            <ArrowRight size={20} aria-hidden="true" />
-          </a>
-        </Part>
-
-        <Part id="does" n={2} title={w.doesTitle}>
+        <Part id="does" title={w.doesTitle}>
           <p className="max-w-[34ch] font-body text-2xl leading-snug md:text-3xl">{w.doesLead}</p>
           <ol className="mt-10 grid gap-px border border-ink bg-ink sm:grid-cols-2">
             {does.map(([t, d], i) => (
@@ -128,10 +97,9 @@ export function Why() {
               </li>
             ))}
           </ol>
-          <p className="mt-10 font-title text-2xl leading-tight md:text-3xl">{w.doesEnd}</p>
         </Part>
 
-        <Part id="not" n={3} title={w.notTitle}>
+        <Part id="not" title={w.notTitle}>
           <ul className="border-t border-ink">
             {[w.not1, w.not2, w.not3].map((t) => (
               <li key={t} className="flex items-center gap-4 border-b border-rule py-4 font-title text-2xl md:text-3xl">
@@ -143,7 +111,7 @@ export function Why() {
           <p className={`mt-8 ${body}`}>{w.notJob}</p>
         </Part>
 
-        <Part id="data" n={4} title={w.dataTitle}>
+        <Part id="data" title={w.dataTitle}>
           <ul className="grid gap-px border border-ink bg-ink md:grid-cols-2">
             {[
               { icon: Lock, text: w.data1 },
@@ -157,7 +125,7 @@ export function Why() {
           </ul>
         </Part>
 
-        <Part id="all" n={5} title={w.allTitle}>
+        <Part id="all" title={w.allTitle}>
           <ul className="grid gap-px border border-ink bg-ink sm:grid-cols-2">
             {forAll.map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-center gap-4 bg-paper p-6">
@@ -166,13 +134,12 @@ export function Why() {
               </li>
             ))}
           </ul>
-          <p className="mt-10 max-w-[34ch] font-body text-2xl leading-snug md:text-3xl">{w.allEnd}</p>
         </Part>
 
         <Closing root="../" />
       </main>
 
-      <PageFooter root="../" />
+      <SiteFooter root="../" />
     </div>
   );
 }
