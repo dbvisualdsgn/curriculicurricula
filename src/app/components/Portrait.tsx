@@ -7,7 +7,7 @@ interface PortraitProps {
   className?: string;
 }
 
-/** Square portrait in the UI's monochrome, no rounding: the photo is grayscale and multiplied onto the paper;
+/** Square portrait, no rounding. The photo follows the appearance (grey, colour or duotone; see theme.css);
  *  without a photo, the initials are set large in the title font on black. */
 export function Portrait({ photo, name, alt, className = '' }: PortraitProps) {
   if (photo) {
@@ -16,7 +16,7 @@ export function Portrait({ photo, name, alt, className = '' }: PortraitProps) {
         <img
           src={photo}
           alt={alt ?? ''}
-          className="h-full w-full object-cover grayscale contrast-[1.1] mix-blend-multiply"
+          className="portrait-img h-full w-full object-cover"
         />
       </span>
     );

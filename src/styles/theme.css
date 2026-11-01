@@ -268,7 +268,7 @@
 
 /* Highlighter: a marker stroke that draws itself behind the text. */
 .hl {
-  color: #111111;
+  color: var(--ink);
   background-image: linear-gradient(transparent 14%, var(--highlight) 14%, var(--highlight) 90%, transparent 90%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -376,6 +376,12 @@
 .gallery-row:has(:focus-visible) .gallery-copy { display: none; }
 
 [data-paused] .docs * { animation-play-state: paused !important; }
+
+/* Portraits follow the appearance: grey and multiplied onto the paper (Paper), in colour (Classic), or a duotone
+   of the ink and the paper (Color; the filter is kept in the page by paper.ts). */
+.portrait-img { filter: grayscale(1) contrast(1.1); mix-blend-mode: multiply; }
+:root[data-photo='color'] .portrait-img { filter: none; mix-blend-mode: normal; }
+:root[data-photo='duotone'] .portrait-img { filter: url(#cc-duotone); mix-blend-mode: normal; }
 
 @media (prefers-reduced-motion: reduce) {
   .gallery-track { animation: none !important; transform: none; }

@@ -25,6 +25,8 @@
         d.body = face('curricula.body', 'serif');
         var v = JSON.parse(localStorage.getItem('curricula.paper.vars') || 'null');
         if (v) for (var k in v) if (/^--[\w-]+$/.test(k) && /^#[0-9a-f]{6}$/i.test(v[k])) document.documentElement.style.setProperty(k, v[k]);
+        var ph = localStorage.getItem('curricula.photo');
+        if (ph === 'color' || ph === 'gray' || ph === 'duotone') document.documentElement.dataset.photo = ph;
       } catch (e) {}
     </script>
   </head>

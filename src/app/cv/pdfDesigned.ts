@@ -8,6 +8,7 @@ import { resolveLogos } from './logos';
 import type { Messages } from '../i18n/en';
 import type { TypeFaces } from '../typography';
 import { currentPaper } from '../paper';
+import { photoForPdf } from './photoEffect';
 
 const W = 595.28; // A4 in points
 const H = 841.89;
@@ -70,8 +71,8 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   const cv = await resolveLogos(input);
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-  // The PDF uses the paper the reader picked in the Light panel.
-  const C = { ink: '#111111', ...currentPaper() };
+  // The PDF uses the appearance picked on the page: paper, ink, soft text, rules and the photo effect.
+  const C = currentPaper();
 
   // Fonts: the text family the reader picked, the sans for meta lines, mono for labels.
   const needed = new Set([families[faces.body].file, families.sans.file, MONO_FILE]);
@@ -149,7 +150,10 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   const tx = avatar === 'none' ? M : M + picSize + 20;
   const textWidth = W - M - tx;
   const top = y;
-  if (avatar === 'photo') doc.addImage(profile.photo!, 'JPEG', M, y, picSize, picSize);
+  if (avatar === 'photo') {
+    const photo = await photoForPdf(profile.photo!, C.photo, C.ink, C.paper).catch(() => profile.photo!);
+    doc.addImage(photo, 'JPEG', M, y, picSize, picSize);
+  }
   if (avatar === 'initials') {
     doc.setFillColor(C.ink);
     doc.rect(M, y, picSize, picSize, 'F');

@@ -303,7 +303,7 @@ function CVPage() {
                   </>
                 )}
                 <TypeSwitcher label={m.app.fonts} />
-                <PaperControls label={m.app.background} />
+                <PaperControls label={m.app.appearance} />
                 {!sharedCV && (
                   <button type="button" onClick={() => setDeleteOpen(true)} aria-label={m.library.delete} title={m.library.delete} className={toolBtn}>
                     <Trash2 size={20} aria-hidden="true" />
