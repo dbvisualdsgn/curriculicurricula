@@ -159,8 +159,6 @@ export const de: Messages = {
     classic: 'Klassisch',
     paperMode: 'Papier',
     color: 'Farbe',
-    classicNote: 'Weißes Papier, schwarzer Text, Fotos in Farbe.',
-    colorNote: 'Wähle einen Farbton: Der Hintergrund bleibt hell und der Text dunkel, so bleibt alles gut lesbar. Fotos nehmen beide Farben an.',
     presets: 'Vorlagen',
     background: 'Hintergrund',
     text: 'Text',
@@ -173,8 +171,6 @@ export const de: Messages = {
     cool: 'Kühl',
     warm: 'Warm',
     contrast: 'Textkontrast mindestens {ratio}:1 · AAA',
-    reset: 'Zurücksetzen',
-    note: 'Wie ein E-Reader: immer Papier, nie ein dunkler Bildschirm. Wärmer oder sanfter, der Text bleibt immer lesbar.',
   },
   type: {
     label: 'Schriften',

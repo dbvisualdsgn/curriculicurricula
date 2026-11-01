@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Appearance
+- Each CV keeps its look: the appearance and the typefaces it was edited in come back when you open it, from My CVs or from a link, and travel in the PDF.
+- The Appearance panel is simpler: no descriptions, no reset.
+- The CV is always a little lighter than the page around it, in the same tone. The PDF uses that lighter colour too.
 - The Background button is now Appearance, in the CV menu and the site menu: Classic, Paper or Color.
 - Classic is white paper, black text and photos in colour. Paper is the e-reader look, as before.
 - Color lets you pick any tone for the background and the text, or start from six presets. The background stays light and the text stays dark, so it always reads well. Photos and highlights take the colours too.

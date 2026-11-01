@@ -31,6 +31,8 @@ import { blankCV } from './cv/defaultCV';
 import { ShareDialog } from './components/ShareDialog';
 import type { CVData } from './cv/types';
 import { I18nProvider, fmt, useI18n } from './i18n';
+import { setPaper, usePaper } from './paper';
+import { setFaces, useTypeFaces } from './typography';
 
 // Read before the first render, because the library saves the sample as soon as it mounts.
 const hadSavedCV = hasSavedCV();
@@ -91,6 +93,33 @@ function CVPage() {
   const [sharedCV, setSharedCV] = useState<CVData | null>(null);
   const [banner, setBanner] = useState<'shared' | 'directory'>('shared');
   const cv = sharedCV ?? ownCV;
+
+  // Each CV keeps the look it was edited in (appearance and typefaces). Opening a CV, from My CVs or a link,
+  // applies its look; changing the look while your own CV is open saves it into that CV.
+  const [paperSettings] = usePaper();
+  const typeFaces = useTypeFaces();
+  const styleKey = sharedCV ? `shared:${sharedCV.profile.name}` : activeId;
+  const styleReady = useRef<string | null>(null);
+  useEffect(() => {
+    const saved = cv.style;
+    if (saved) {
+      setPaper(saved.paper);
+      setFaces(saved.faces);
+    }
+    styleReady.current = saved ? `wait:${styleKey}` : styleKey;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [styleKey]);
+  useEffect(() => {
+    const style = { paper: paperSettings, faces: typeFaces };
+    // Wait until the opened CV's own look is on the page before saving anything into it.
+    if (styleReady.current === `wait:${styleKey}`) {
+      if (JSON.stringify(cv.style) === JSON.stringify(style)) styleReady.current = styleKey;
+      return;
+    }
+    if (sharedCV || styleReady.current !== styleKey) return;
+    if (JSON.stringify(ownCV.style) !== JSON.stringify(style)) update((d) => ({ ...d, style }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paperSettings, typeFaces, styleKey]);
   const [shareOpen, setShareOpen] = useState(false);
   // A first visit (nothing saved, no shared or example CV in the URL) opens the editor: there is nothing to read yet.
   const [editing, setEditing] = useState(() => !hadSavedCV && !/[?&]person=/.test(window.location.search) && !window.location.hash.includes('cv='));
@@ -375,7 +404,7 @@ function CVPage() {
           className="mx-auto max-w-5xl px-3 py-6 font-body focus:outline-none sm:px-6 md:py-12 print:p-0"
         >
           {/* The sheet: one page on the desk, in the paper the person chose (no fill of its own). */}
-          <div className="space-y-10 border border-rule px-5 py-8 shadow-[0_1px_0_var(--rule),0_12px_32px_-18px_rgb(0_0_0/0.25)] sm:px-10 md:space-y-12 md:px-14 md:py-14 print:space-y-8 print:border-0 print:bg-transparent print:p-0 print:shadow-none">
+          <div className="space-y-10 border border-rule bg-sheet px-5 py-8 shadow-[0_1px_0_var(--rule),0_12px_32px_-18px_rgb(0_0_0/0.25)] sm:px-10 md:space-y-12 md:px-14 md:py-14 print:space-y-8 print:border-0 print:bg-transparent print:p-0 print:shadow-none">
           <div className="grid items-start gap-6 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)] sm:gap-8 md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-10">
             {avatar !== 'none' && (
               <Portrait
@@ -425,7 +454,7 @@ function CVPage() {
           {cv.summary.trim() && (
             <RevealSection aria-labelledby="summary-heading">
               <SectionHead id="summary-heading" title={m.sections.summary} />
-              <div className="border border-rule bg-paper px-5 py-5 md:px-7 md:py-6 print:border-0 print:p-0">
+              <div className="border border-rule bg-sheet px-5 py-5 md:px-7 md:py-6 print:border-0 print:p-0">
                 <p className="max-w-[64ch] whitespace-pre-line text-lg leading-relaxed">{cv.summary}</p>
               </div>
             </RevealSection>

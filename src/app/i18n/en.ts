@@ -158,8 +158,6 @@ export const en = {
     classic: 'Classic',
     paperMode: 'Paper',
     color: 'Color',
-    classicNote: 'White paper, black text, photos in colour.',
-    colorNote: 'Pick any tone: the background stays light and the text stays dark, so it always reads well. Photos take both colours.',
     presets: 'Presets',
     background: 'Background',
     text: 'Text',
@@ -172,8 +170,6 @@ export const en = {
     cool: 'Cool',
     warm: 'Warm',
     contrast: 'Text contrast at least {ratio}:1 · AAA',
-    reset: 'Reset',
-    note: 'Like an e-reader: always paper, never a dark screen. Make it warmer or softer; text always stays readable.',
   },
   type: {
     label: 'Typefaces',

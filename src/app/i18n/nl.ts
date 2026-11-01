@@ -159,8 +159,6 @@ export const nl: Messages = {
     classic: 'Klassiek',
     paperMode: 'Papier',
     color: 'Kleur',
-    classicNote: 'Wit papier, zwarte tekst, foto’s in kleur.',
-    colorNote: 'Kies een tint: de achtergrond blijft licht en de tekst donker, zo leest het altijd goed. Foto’s krijgen beide kleuren.',
     presets: 'Combinaties',
     background: 'Achtergrond',
     text: 'Tekst',
@@ -173,8 +171,6 @@ export const nl: Messages = {
     cool: 'Koel',
     warm: 'Warm',
     contrast: 'Tekstcontrast minstens {ratio}:1 · AAA',
-    reset: 'Herstellen',
-    note: 'Zoals een e-reader: altijd papier, nooit een donker scherm. Warmer of zachter, de tekst blijft altijd leesbaar.',
   },
   type: {
     label: 'Lettertypen',

@@ -159,8 +159,6 @@ export const es: Messages = {
     classic: 'Clásico',
     paperMode: 'Papel',
     color: 'Color',
-    classicNote: 'Papel blanco, texto negro, fotos en color.',
-    colorNote: 'Elige cualquier tono: el fondo sigue claro y el texto oscuro, así siempre se lee bien. Las fotos toman los dos colores.',
     presets: 'Combinaciones',
     background: 'Fondo',
     text: 'Texto',
@@ -173,8 +171,6 @@ export const es: Messages = {
     cool: 'Fría',
     warm: 'Cálida',
     contrast: 'Contraste del texto de al menos {ratio}:1 · AAA',
-    reset: 'Restablecer',
-    note: 'Como un lector de libros: siempre papel, nunca una pantalla oscura. Más cálido o más suave, el texto siempre se lee bien.',
   },
   type: {
     label: 'Tipografías',

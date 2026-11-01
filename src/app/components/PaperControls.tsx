@@ -1,12 +1,11 @@
 import { useEffect, useId, useState } from 'react';
-import { Palette, Sun, Thermometer } from 'lucide-react';
+import { Paintbrush, Sun, Thermometer } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import {
   bgFromHue,
   clampBg,
   clampInk,
   colorPresets,
-  defaultPaper,
   hex,
   hueOf,
   inkFromHue,
@@ -50,7 +49,7 @@ function HexField({ id, label, value, onCommit }: { id: string; label: string; v
 
 /** Appearance: Classic, Paper or Color. Paper keeps the e-reader light (brightness, warmth); Color takes a light
  *  background tone and a dark text tone, both clamped so text always reads at AAA. With `label`, the button shows
- *  a palette and its name (from md up), as in the CV menu; without, a sun icon, as in the site header. */
+ *  a paintbrush and its name (from md up), as in the CV menu; without, a sun icon, as in the site header. */
 export function PaperControls({ label }: { label?: string } = {}) {
   const { m } = useI18n();
   const p = m.paper;
@@ -111,7 +110,7 @@ export function PaperControls({ label }: { label?: string } = {}) {
           title={label ?? p.title}
           className={label ? 'inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-[13px] text-ink hover:bg-zinc-100 md:h-9 md:min-w-9' : 'inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink hover:bg-zinc-100 md:h-9 md:w-9'}
         >
-          {label ? <Palette size={20} aria-hidden="true" /> : <Sun size={20} aria-hidden="true" />}
+          {label ? <Paintbrush size={20} aria-hidden="true" /> : <Sun size={20} aria-hidden="true" />}
           {label && <span className="hidden whitespace-nowrap md:inline">{label}</span>}
         </button>
       </PopoverTrigger>
@@ -142,8 +141,6 @@ export function PaperControls({ label }: { label?: string } = {}) {
           })}
         </div>
 
-        {settings.mode === 'classic' && <p className="border-t border-rule px-4 py-3 text-[13px] leading-snug text-ink-soft">{p.classicNote}</p>}
-
         {settings.mode === 'paper' && (
           <>
             <div className="border-t border-rule" />
@@ -152,7 +149,6 @@ export function PaperControls({ label }: { label?: string } = {}) {
             <div className="border-t border-rule" />
             {slider(wId, settings.warmth, (warmth) => setSettings((s) => ({ ...s, warmth })), p.warmth, p.cool, p.warm,
               <Thermometer size={20} aria-hidden="true" />, 'linear-gradient(90deg, #f5f6f3, #eceae5, #ecddbf)')}
-            <p className="border-t border-rule px-4 py-3 text-[12px] leading-snug text-ink-soft">{p.note}</p>
           </>
         )}
 
@@ -196,22 +192,12 @@ export function PaperControls({ label }: { label?: string } = {}) {
                 <HexField id={inkId} label={`${p.text} ${p.hex}`} value={ink} onCommit={(v) => setSettings((s) => ({ ...s, ink: v }))} />
               </div>
             </div>
-            <p className="border-t border-rule px-4 py-3 text-[12px] leading-snug text-ink-soft">{p.colorNote}</p>
           </>
         )}
 
-        <div className="flex items-center justify-between gap-3 border-t border-rule px-4 py-3">
-          <p className="text-[12px] text-ink-soft" aria-live="polite">
-            {fmt(p.contrast, { ratio: minRatio.toFixed(1) })}
-          </p>
-          <button
-            type="button"
-            onClick={() => setSettings(defaultPaper)}
-            className="rounded-sm px-2 py-1 text-[12px] underline underline-offset-4 hover:bg-zinc-100"
-          >
-            {p.reset}
-          </button>
-        </div>
+        <p className="border-t border-rule px-4 py-3 text-[12px] text-ink-soft" aria-live="polite">
+          {fmt(p.contrast, { ratio: minRatio.toFixed(1) })}
+        </p>
       </PopoverContent>
     </Popover>
   );

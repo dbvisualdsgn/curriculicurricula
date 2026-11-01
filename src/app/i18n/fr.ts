@@ -159,8 +159,6 @@ export const fr: Messages = {
     classic: 'Classique',
     paperMode: 'Papier',
     color: 'Couleur',
-    classicNote: 'Papier blanc, texte noir, photos en couleur.',
-    colorNote: 'Choisissez une teinte : le fond reste clair et le texte foncé, pour une lecture toujours facile. Les photos prennent les deux couleurs.',
     presets: 'Associations',
     background: 'Fond',
     text: 'Texte',
@@ -173,8 +171,6 @@ export const fr: Messages = {
     cool: 'Froide',
     warm: 'Chaude',
     contrast: 'Contraste du texte d’au moins {ratio}:1 · AAA',
-    reset: 'Réinitialiser',
-    note: 'Comme une liseuse : toujours du papier, jamais d’écran sombre. Plus chaud ou plus doux, le texte reste toujours lisible.',
   },
   type: {
     label: 'Polices',

@@ -38,7 +38,8 @@ There is no dark theme: a CV is a page to read and print. The **Appearance** pan
 
 Secondary text and greys are recomputed from the paper and the ink in every look, so text contrast stays ≥ 7:1
 (WCAG AAA); `paper.test.ts` checks every tone. The choice is saved, applied before first paint by an inline script
-(colours and `data-photo`), and used for the paper, ink and photo of the "As on the page" PDF.
+(colours and `data-photo`), and used for the paper, ink and photo of the "As on the page" PDF. Each CV also saves
+the look it was edited in (`style`: appearance and typefaces); opening it, from My CVs or a link, applies that look.
 
 Tailwind's `zinc-*` and `white` are remapped onto this warm neutral scale, and every `shadow-*` is
 flat. Brand logos inside a CV are the only colour on screen (they belong to the CV, not the brand).
@@ -78,7 +79,7 @@ PDF embeds the same title and text fonts.
 
 - **Section opener:** 1px ink rule and a mono title (`SectionHead`). No running numbers on the CV.
 - **CV sheet:** the CV sits on one sheet with a hairline edge and a soft shadow. The sheet has no fill of its
-  own: it is the `paper` of the chosen Appearance, so each CV looks like its own setting, not one fixed white. Print drops the sheet. Next to the name, on the left, the person picks nothing,
+  own colour: `--sheet`, the page's tone 40% closer to white (Paper and Color; white in Classic), so the CV is always the lightest thing on the page and the PDF uses the same colour. It follows the chosen Appearance, so each CV looks like its own setting, not one fixed white. Print drops the sheet. Next to the name, on the left, the person picks nothing,
   their initials (a black square) or a photo (square, no rounding, grayscale, 480px). The PDF follows the same choice.
 - **CV page bars:** row 1 is the site (wordmark, My CVs, language, Example CVs). Row 2 is the CV menu, in two
   blocks: one bordered edit block (Edit CV, Recruiter check, Fonts, Background, Delete), each an icon with a name,

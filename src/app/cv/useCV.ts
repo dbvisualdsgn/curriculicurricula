@@ -1,7 +1,9 @@
 // Reading CVs from storage, files and share links: fill in whatever is missing so older data still renders,
 // and keep only safe values, since a shared link may come from anyone.
 import { blankCV, newId } from './defaultCV';
-import type { CVData } from './types';
+import { readPaper } from '../paper';
+import { isTitleSlug } from '../titleFontLoader';
+import type { CVData, CVStyle } from './types';
 
 type Obj = Record<string, unknown>;
 
@@ -68,5 +70,14 @@ export function normalize(input: unknown): CVData {
       const o = obj(l);
       return { id: id(o.id), name: str(o.name, 100), level: str(o.level, 100) };
     }),
+    ...(style(data.style) ? { style: style(data.style) } : {}),
   };
+}
+
+/** A saved look, or undefined when there is none or it can't be read. Colours are re-clamped on use. */
+function style(v: unknown): CVStyle | undefined {
+  const s = obj(v);
+  const f = obj(s.faces);
+  if (!s.paper || !isTitleSlug(f.title) || (f.body !== 'sans' && f.body !== 'serif')) return undefined;
+  return { paper: readPaper(s.paper), faces: { title: f.title, body: f.body } };
 }

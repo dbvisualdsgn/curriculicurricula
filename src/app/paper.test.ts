@@ -36,11 +36,26 @@ describe('appearance colours', () => {
       const c = paperColors(s);
       expect(c.inkRatio).toBeGreaterThanOrEqual(7);
       expect(c.softRatio).toBeGreaterThanOrEqual(7);
+      // The CV sheet: lighter than the page, same tone, text still at AAA.
+      const [paper, sheet, soft] = [c.paper, c.sheet, c.vars['--ink-soft']].map((x) => parseHex(x)!);
+      expect(toOklch(sheet).L).toBeGreaterThanOrEqual(toOklch(paper).L);
+      if (toOklch(paper).C > 0.01) expect(Math.abs(toOklch(sheet).H - toOklch(paper).H)).toBeLessThan(6);
+      expect(contrast(soft, sheet)).toBeGreaterThanOrEqual(7);
     }
   });
 
   it('opens older saves as Paper and drops bad values', () => {
     expect(readPaper({ warmth: 20, brightness: 80 })).toMatchObject({ mode: 'paper', warmth: 20, brightness: 80 });
     expect(readPaper({ mode: 'neon', bg: 'red', warmth: 500 })).toMatchObject({ mode: 'paper', warmth: 100 });
+  });
+});
+
+describe('look saved in a CV', () => {
+  it('keeps a valid look and drops a broken one', async () => {
+    const { normalize } = await import('./cv/useCV');
+    const ok = normalize({ style: { paper: { mode: 'color', bg: '#f1e6d8', ink: '#3a2e9c' }, faces: { title: 'clash-display', body: 'sans' } } });
+    expect(ok.style).toMatchObject({ paper: { mode: 'color', bg: '#f1e6d8' }, faces: { title: 'clash-display', body: 'sans' } });
+    expect(normalize({ style: { paper: {}, faces: { title: 'not-a-font', body: 'sans' } } }).style).toBeUndefined();
+    expect(normalize({}).style).toBeUndefined();
   });
 });
