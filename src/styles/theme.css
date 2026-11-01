@@ -8,8 +8,8 @@
   --rule: #cfccc5;
   /* Editor sheet: lighter than the paper so the tool reads as laid over the page. */
   --panel: #f6f5f2;
-  /* The CV sheet: the page's tone, 30% closer to white (set by paper.ts for each appearance). */
-  --sheet: #f2f0ed;
+  /* The CV sheet: the page’s tone, 40% closer to white (set by paper.ts for each appearance). */
+  --sheet: #f4f2ef;
   --focus: #111111;
   /* Accents, used sparingly as marks and fills; text on top of them stays ink. */
   --highlight: #e6f05a;

@@ -49,3 +49,13 @@ describe('appearance colours', () => {
     expect(readPaper({ mode: 'neon', bg: 'red', warmth: 500 })).toMatchObject({ mode: 'paper', warmth: 100 });
   });
 });
+
+describe('look saved in a CV', () => {
+  it('keeps a valid look and drops a broken one', async () => {
+    const { normalize } = await import('./cv/useCV');
+    const ok = normalize({ style: { paper: { mode: 'color', bg: '#f1e6d8', ink: '#3a2e9c' }, faces: { title: 'clash-display', body: 'sans' } } });
+    expect(ok.style).toMatchObject({ paper: { mode: 'color', bg: '#f1e6d8' }, faces: { title: 'clash-display', body: 'sans' } });
+    expect(normalize({ style: { paper: {}, faces: { title: 'not-a-font', body: 'sans' } } }).style).toBeUndefined();
+    expect(normalize({}).style).toBeUndefined();
+  });
+});

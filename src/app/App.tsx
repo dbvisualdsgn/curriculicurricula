@@ -31,6 +31,8 @@ import { blankCV } from './cv/defaultCV';
 import { ShareDialog } from './components/ShareDialog';
 import type { CVData } from './cv/types';
 import { I18nProvider, fmt, useI18n } from './i18n';
+import { setPaper, usePaper } from './paper';
+import { setFaces, useTypeFaces } from './typography';
 
 // Read before the first render, because the library saves the sample as soon as it mounts.
 const hadSavedCV = hasSavedCV();
@@ -91,6 +93,33 @@ function CVPage() {
   const [sharedCV, setSharedCV] = useState<CVData | null>(null);
   const [banner, setBanner] = useState<'shared' | 'directory'>('shared');
   const cv = sharedCV ?? ownCV;
+
+  // Each CV keeps the look it was edited in (appearance and typefaces). Opening a CV, from My CVs or a link,
+  // applies its look; changing the look while your own CV is open saves it into that CV.
+  const [paperSettings] = usePaper();
+  const typeFaces = useTypeFaces();
+  const styleKey = sharedCV ? `shared:${sharedCV.profile.name}` : activeId;
+  const styleReady = useRef<string | null>(null);
+  useEffect(() => {
+    const saved = cv.style;
+    if (saved) {
+      setPaper(saved.paper);
+      setFaces(saved.faces);
+    }
+    styleReady.current = saved ? `wait:${styleKey}` : styleKey;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [styleKey]);
+  useEffect(() => {
+    const style = { paper: paperSettings, faces: typeFaces };
+    // Wait until the opened CV's own look is on the page before saving anything into it.
+    if (styleReady.current === `wait:${styleKey}`) {
+      if (JSON.stringify(cv.style) === JSON.stringify(style)) styleReady.current = styleKey;
+      return;
+    }
+    if (sharedCV || styleReady.current !== styleKey) return;
+    if (JSON.stringify(ownCV.style) !== JSON.stringify(style)) update((d) => ({ ...d, style }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paperSettings, typeFaces, styleKey]);
   const [shareOpen, setShareOpen] = useState(false);
   // A first visit (nothing saved, no shared or example CV in the URL) opens the editor: there is nothing to read yet.
   const [editing, setEditing] = useState(() => !hadSavedCV && !/[?&]person=/.test(window.location.search) && !window.location.hash.includes('cv='));

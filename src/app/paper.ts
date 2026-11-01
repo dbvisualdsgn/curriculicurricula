@@ -4,7 +4,7 @@
 // - Color: a light, tinted paper (its tone changes, never its brightness) and a dark, tinted ink. Photos as a
 //   duotone of the two, and the highlight becomes a saturated tint of the ink.
 // Every text colour keeps at least 7:1 contrast (WCAG AAA) with the paper, in every look.
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 
 export type AppearanceMode = 'classic' | 'paper' | 'color';
 export type PhotoEffect = 'color' | 'gray' | 'duotone';
@@ -31,7 +31,7 @@ const NEUTRAL: RGB = [236, 234, 229];
 const WARM: RGB = [236, 221, 191];
 const YELLOW = '#e6f05a';
 /** How much lighter the CV sheet is than the page (toward white, same tone). */
-export const SHEET_LIFT = 0.3;
+export const SHEET_LIFT = 0.4;
 /** Minimum contrast for every text colour on the paper (AAA). */
 const AAA = 7;
 /** Coloured ink sits above that, so secondary text (a lighter mix of the ink) can still reach AAA. */
@@ -190,7 +190,7 @@ export function paperColors(settings: PaperSettings) {
     '--ink-soft': hex(inkSoft),
     '--rule': hex(mix(paper, ink, 0.16)),
     '--panel': hex(mix(paper, WHITE, 0.55)),
-    // The CV sheet: the same tone as the page, 30% closer to white, so the CV always reads as the lightest thing on it.
+    // The CV sheet: the same tone as the page, 40% closer to white, so the CV always reads as the lightest thing on it.
     '--sheet': hex(sheet),
     '--color-zinc-50': hex(mix(paper, ink, 0.035)),
     '--color-zinc-100': hex(mix(paper, ink, 0.07)),
@@ -265,10 +265,28 @@ function initial(): PaperSettings {
   }
 }
 
+// One shared setting for every control on the page, so a CV can bring its own look when it opens.
+let state: PaperSettings | null = null;
+const listeners = new Set<() => void>();
+const get = () => (state ??= initial());
+const subscribe = (l: () => void) => {
+  listeners.add(l);
+  return () => listeners.delete(l);
+};
+
+/** Change the appearance (a value, or a function of the current one) and apply it to the page. */
+export function setPaper(next: PaperSettings | ((s: PaperSettings) => PaperSettings)) {
+  const value = readPaper(typeof next === 'function' ? next(get()) : next);
+  if (JSON.stringify(value) === JSON.stringify(get())) return;
+  state = value;
+  applyPaper(value);
+  listeners.forEach((l) => l());
+}
+
 export function usePaper() {
-  const [settings, setSettings] = useState<PaperSettings>(initial);
+  const settings = useSyncExternalStore(subscribe, get);
   useEffect(() => applyPaper(settings), [settings]);
-  return [settings, setSettings] as const;
+  return [settings, setPaper] as const;
 }
 
 /** Current colours as resolved on the page (for the designed PDF). */
@@ -277,5 +295,5 @@ export function currentPaper() {
   const get = (name: string, fallback: string) => s.getPropertyValue(name).trim() || fallback;
   const photo = (document.documentElement.dataset.photo as PhotoEffect | undefined) ?? 'gray';
   // The PDF is the CV sheet, so its page takes the sheet colour.
-  return { paper: get('--sheet', '#F2F0ED'), ink: get('--ink', '#111111'), soft: get('--ink-soft', '#45433F'), rule: get('--rule', '#CFCCC5'), photo };
+  return { paper: get('--sheet', '#F4F2EF'), ink: get('--ink', '#111111'), soft: get('--ink-soft', '#45433F'), rule: get('--rule', '#CFCCC5'), photo };
 }

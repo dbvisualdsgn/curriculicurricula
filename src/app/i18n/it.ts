@@ -159,8 +159,6 @@ export const it: Messages = {
     classic: 'Classico',
     paperMode: 'Carta',
     color: 'Colore',
-    classicNote: 'Carta bianca, testo nero, foto a colori.',
-    colorNote: 'Scegli qualsiasi tono: lo sfondo resta chiaro e il testo scuro, così si legge sempre bene. Le foto prendono entrambi i colori.',
     presets: 'Combinazioni',
     background: 'Sfondo',
     text: 'Testo',
@@ -173,8 +171,6 @@ export const it: Messages = {
     cool: 'Fredda',
     warm: 'Calda',
     contrast: 'Contrasto del testo almeno {ratio}:1 · AAA',
-    reset: 'Ripristina',
-    note: 'Come un e-reader: sempre carta, mai uno schermo scuro. Rendila più calda o più tenue; il testo resta sempre leggibile.',
   },
   type: {
     label: 'Caratteri',

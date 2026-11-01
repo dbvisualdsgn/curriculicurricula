@@ -68,6 +68,14 @@ export interface CVData {
   education: Education[];
   certifications: Certification[];
   languages: Language[];
+  /** The look it was last edited in: appearance and typefaces. Applied when the CV opens, so it travels in
+   *  share links and PDFs. */
+  style?: CVStyle;
+}
+
+export interface CVStyle {
+  paper: { mode: 'classic' | 'paper' | 'color'; warmth: number; brightness: number; bg: string; ink: string };
+  faces: { title: string; body: 'sans' | 'serif' };
 }
 
 export type ListKey = 'tools' | 'experience' | 'education' | 'certifications' | 'languages';

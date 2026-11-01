@@ -159,8 +159,6 @@ export const pt: Messages = {
     classic: 'Clássico',
     paperMode: 'Papel',
     color: 'Cor',
-    classicNote: 'Papel branco, texto preto, fotos a cores.',
-    colorNote: 'Escolhe qualquer tom: o fundo fica claro e o texto escuro, por isso lê-se sempre bem. As fotos ganham as duas cores.',
     presets: 'Combinações',
     background: 'Fundo',
     text: 'Texto',
@@ -173,8 +171,6 @@ export const pt: Messages = {
     cool: 'Fria',
     warm: 'Quente',
     contrast: 'Contraste do texto de pelo menos {ratio}:1 · AAA',
-    reset: 'Repor',
-    note: 'Como um leitor de livros: sempre papel, nunca um ecrã escuro. Mais quente ou mais suave, o texto fica sempre legível.',
   },
   type: {
     label: 'Tipos de letra',
