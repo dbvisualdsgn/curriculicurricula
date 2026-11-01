@@ -1,11 +1,10 @@
-// Building blocks shared by the Why and About pages.
+// Building blocks of the Why page.
 import { ArrowRight } from 'lucide-react';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
 
 export const label = 'font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
 export const primaryBtn = 'nudge inline-flex h-12 items-center gap-3 rounded-sm bg-ink px-5 text-[15px] font-medium text-paper hover:opacity-90';
-export const textLink = 'inline-flex items-center gap-1.5 text-[15px] text-ink underline decoration-1 underline-offset-[6px] hover:decoration-2';
 export const body = 'max-w-[46ch] font-body text-lg leading-relaxed text-ink-soft';
 export const wrap = 'mx-auto max-w-6xl xl:max-w-none xl:px-12 px-4 sm:px-8';
 
@@ -64,4 +63,3 @@ export function Closing({ root }: { root: string }) {
   );
 }
 
-export const GITHUB_URL = 'https://github.com/dbvisualdsgn/Careerpath';

@@ -40,8 +40,9 @@ function FontRow({ font, name, checked, onPick }: { font: TitleFont; name: strin
   );
 }
 
-/** Kindle-style menu: any vetted Fontshare family for titles (always bold), Switzer or Gambetta for text. */
-export function TypeSwitcher() {
+/** Kindle-style menu: any vetted Fontshare family for titles (always bold), Switzer or Gambetta for text.
+ *  With `label`, the button shows a name next to the icon (from md up), as in the CV menu. */
+export function TypeSwitcher({ label }: { label?: string } = {}) {
   const { m } = useI18n();
   const t = m.type;
   const current = useTypeFaces();
@@ -66,11 +67,12 @@ export function TypeSwitcher() {
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={t.label}
-          title={t.label}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink hover:bg-zinc-100 md:h-9 md:w-9"
+          aria-label={label ?? t.label}
+          title={label ?? t.label}
+          className={label ? 'inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-[13px] text-ink hover:bg-zinc-100 md:h-9 md:min-w-9' : 'inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink hover:bg-zinc-100 md:h-9 md:w-9'}
         >
           <Type size={20} aria-hidden="true" />
+          {label && <span className="hidden whitespace-nowrap md:inline">{label}</span>}
         </button>
       </PopoverTrigger>
       <PopoverContent align="center" aria-label={t.label} className="w-[22rem] max-w-[calc(100vw-2rem)] rounded-sm border-ink bg-paper p-0 text-ink">

@@ -1,11 +1,12 @@
 import { useId } from 'react';
-import { Sun, Thermometer } from 'lucide-react';
+import { Palette, Sun, Thermometer } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { defaultPaper, paperColors, usePaper } from '../paper';
 import { fmt, useI18n } from '../i18n';
 
-/** Kobo-style light panel: brightness and warmth sliders, with the live text contrast. */
-export function PaperControls() {
+/** Kobo-style light panel: brightness and warmth sliders, with the live text contrast.
+ *  With `label`, the button reads as the background colour setting: palette icon and a name (from md up). */
+export function PaperControls({ label }: { label?: string } = {}) {
   const { m } = useI18n();
   const p = m.paper;
   const [settings, setSettings] = usePaper();
@@ -47,11 +48,12 @@ export function PaperControls() {
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={p.title}
-          title={p.title}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink hover:bg-zinc-100 md:h-9 md:w-9"
+          aria-label={label ?? p.title}
+          title={label ?? p.title}
+          className={label ? 'inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-[13px] text-ink hover:bg-zinc-100 md:h-9 md:min-w-9' : 'inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink hover:bg-zinc-100 md:h-9 md:w-9'}
         >
-          <Sun size={20} aria-hidden="true" />
+          {label ? <Palette size={20} aria-hidden="true" /> : <Sun size={20} aria-hidden="true" />}
+          {label && <span className="hidden whitespace-nowrap md:inline">{label}</span>}
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" aria-label={p.title} className="w-80 rounded-sm border-ink bg-paper p-0 text-ink">
