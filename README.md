@@ -15,9 +15,8 @@ The original design is available at https://www.figma.com/design/68PhbcZDT2IDB8n
 - `/why/` explains why the project exists (`why/index.html` → `src/why/`): a CV should be a standard format, not a
   design project. Then one person's passport, driving licence and CV, animated (paused by a button, still under
   reduced motion), what it does and doesn't do, your data, and who it's for.
-- `/about/` is about who made it (`about/index.html` → `src/about/`), told in the third person, with a black-and-white
-  portrait (`public/about/daniele.jpg`). It is not in the menu: every site page's footer (`SiteFooter`) shows a short
-  CV of its maker (photo, one line, email, LinkedIn) and links to it. Parts shared with `/why/` live in `src/why/parts.tsx`.
+- Every site page ends with `SiteFooter`: a short CV of its maker (black-and-white photo in `public/images/`, one line,
+  email, LinkedIn).
 
 **My CVs:** keep several CVs in the same browser (`src/app/cv/library.ts`). Switch, create and delete them from the
 "My CVs" menu and the editor. An older single CV is migrated automatically.

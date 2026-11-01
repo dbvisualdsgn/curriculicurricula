@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronDown, FileUp, Files, Plus, Trash2 } from 'lucide-react';
+import { Check, ChevronDown, FileUp, Files, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Portrait } from './Portrait';
 import { fmt, useI18n } from '../i18n';
@@ -12,7 +12,6 @@ interface LibraryMenuProps {
   onNew: () => void;
   onImportPdf: () => void;
   /** Delete the open CV (asks first). Kept here, away from Download in the CV menu. */
-  onDelete?: () => void;
   compact?: boolean;
 }
 
@@ -29,7 +28,7 @@ function relative(ts: number, locale: string) {
 }
 
 /** "My CVs": every CV in this browser, the open one marked, plus New CV, Import from PDF and Delete. */
-export function LibraryMenu({ items, activeId, onSelect, onNew, onImportPdf, onDelete, compact = false }: LibraryMenuProps) {
+export function LibraryMenu({ items, activeId, onSelect, onNew, onImportPdf, compact = false }: LibraryMenuProps) {
   const { m, locale } = useI18n();
   const l = m.library;
   const [open, setOpen] = useState(false);
@@ -92,11 +91,6 @@ export function LibraryMenu({ items, activeId, onSelect, onNew, onImportPdf, onD
             <FileUp size={20} aria-hidden="true" /> {l.importPdf}
           </button>
         </div>
-        {onDelete && (
-          <button type="button" onClick={run(onDelete)} className="flex w-full items-center justify-center gap-2 border-t border-rule px-3 py-3 text-[13px] hover:bg-ink hover:text-paper">
-            <Trash2 size={20} aria-hidden="true" /> {l.delete}
-          </button>
-        )}
       </PopoverContent>
     </Popover>
   );

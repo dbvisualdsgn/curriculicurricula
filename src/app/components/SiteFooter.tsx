@@ -1,4 +1,4 @@
-import { ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { Portrait } from './Portrait';
 import { Wordmark } from './Wordmark';
 import { useI18n } from '../i18n';
@@ -14,8 +14,8 @@ const wrap = 'mx-auto max-w-6xl xl:max-w-none xl:px-12 px-4 sm:px-8';
 const link = 'inline-flex min-h-11 items-center gap-2 text-[15px] text-ink underline decoration-1 underline-offset-[6px] hover:decoration-2 sm:min-h-0';
 
 /** Footer for the site pages (not the CV tool): who made it, as a short CV, then the site line.
- *  `root` is the relative path to the site root; on the About page the link to it is left out. */
-export function SiteFooter({ root, onAbout = false }: { root: string; onAbout?: boolean }) {
+ *  `root` is the relative path to the site root. */
+export function SiteFooter({ root }: { root: string }) {
   const { m } = useI18n();
   const f = m.footer;
   return (
@@ -23,7 +23,7 @@ export function SiteFooter({ root, onAbout = false }: { root: string; onAbout?: 
       <div className={`${wrap} py-12 md:py-16`}>
         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft">{f.madeBy}</p>
         <div className={`mt-6 grid items-start gap-5 ${SHOW_PHOTO ? 'grid-cols-[4.5rem_minmax(0,1fr)] md:grid-cols-[6rem_minmax(0,1fr)] md:gap-8' : ''}`}>
-          {SHOW_PHOTO && <Portrait photo={`${root}about/daniele.jpg`} name={NAME} alt={f.photoAlt} className="aspect-square w-full" />}
+          {SHOW_PHOTO && <Portrait photo={`${root}images/daniele.jpg`} name={NAME} alt={f.photoAlt} className="aspect-square w-full" />}
           <div className="min-w-0">
             <p className="font-title text-2xl leading-tight md:text-3xl">{NAME}</p>
             <p className="mt-2 max-w-[52ch] font-body text-lg leading-snug text-ink-soft">{f.bio}</p>
@@ -41,14 +41,6 @@ export function SiteFooter({ root, onAbout = false }: { root: string; onAbout?: 
                   LinkedIn
                 </a>
               </li>
-              {!onAbout && (
-                <li>
-                  <a href={`${root}about/`} className={`nudge ${link}`}>
-                    {f.more}
-                    <ArrowRight size={20} aria-hidden="true" />
-                  </a>
-                </li>
-              )}
             </ul>
           </div>
         </div>

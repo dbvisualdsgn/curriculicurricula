@@ -1,6 +1,8 @@
-import { ReadingControls } from './components/ReadingControls';
+import { TypeSwitcher } from './components/TypeSwitcher';
+import { PaperControls } from './components/PaperControls';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Mail, Share2, Phone, MapPin, Linkedin, PencilLine, Eye, Globe } from 'lucide-react';
+import { Mail, Share2, Phone, MapPin, Linkedin, PencilLine, Eye, Globe, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import { TooltipProvider } from './components/ui/tooltip';
@@ -266,18 +268,20 @@ function CVPage() {
                     toast.success(m.library.created);
                   }}
                   onImportPdf={() => pdfRef.current?.click()}
-                  onDelete={() => setDeleteOpen(true)}
                 />
               )}
             </div>
-            <a href="../people/" className="inline-flex h-11 shrink-0 items-center rounded-sm px-2 text-[13px] text-ink hover:bg-zinc-100 md:h-9">
-              {m.directory.nav}
-            </a>
+            <div className="flex shrink-0 items-center gap-1">
+              <LanguageSwitcher />
+              <a href="../people/" className="inline-flex h-11 shrink-0 items-center rounded-sm px-2 text-[13px] text-ink hover:bg-zinc-100 md:h-9">
+                {m.directory.nav}
+              </a>
+            </div>
           </nav>
-          {/* Three groups: write and check · how the page reads · who gets it. Download is the one filled button. */}
+          {/* Two blocks: every tool that changes the CV or how it looks, then who gets it. Download is the one filled button. */}
           <div role="group" aria-label={m.app.cvActions} className="border-t border-rule">
-            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-2 gap-y-1 px-3 py-1.5 sm:px-6">
-              <div className="flex flex-wrap items-center gap-0.5">
+            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-3 py-1.5 sm:px-6">
+              <div role="group" aria-label={m.app.editTools} className="flex flex-wrap items-center gap-0.5 rounded-sm border border-rule p-0.5">
                 {!sharedCV && (
                   <>
                     <button type="button" onClick={() => setEditing((on) => !on)} aria-pressed={editing} className={toolBtn}>
@@ -298,12 +302,22 @@ function CVPage() {
                     </button>
                   </>
                 )}
+                <TypeSwitcher label={m.app.fonts} />
+                <PaperControls label={m.app.background} />
+                {!sharedCV && (
+                  <button type="button" onClick={() => setDeleteOpen(true)} aria-label={m.library.delete} title={m.library.delete} className={toolBtn}>
+                    <Trash2 size={20} aria-hidden="true" />
+                    <span className={toolLabel}>{m.app.remove}</span>
+                  </button>
+                )}
               </div>
-              <div className="order-last flex w-full flex-wrap items-center justify-between gap-1 border-t border-rule pt-1 md:order-none md:w-auto md:border-0 md:pt-0">
-                <ReadingControls />
-              </div>
-              <div className="flex flex-wrap items-center gap-0.5">
-                <button type="button" onClick={() => setShareOpen(true)} aria-label={m.app.share} title={m.app.share} className={toolBtn}>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShareOpen(true)}
+                  aria-label={m.app.share}
+                  className="inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-sm border border-ink px-3 text-[13px] text-ink hover:bg-ink hover:text-paper md:h-9"
+                >
                   <Share2 size={20} aria-hidden="true" />
                   <span className={toolLabel} aria-hidden="true">{m.app.share}</span>
                 </button>

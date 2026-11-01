@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### A clearer CV menu
+- Every tool for your CV sits in one block: Edit, Recruiter check, Fonts, Background and Delete, each with a name.
+- Delete asks before it removes anything. Share and Download stay on the right.
+- The language moved up, next to Example CVs. The About page is gone: the footer says who made the site.
+
 ### Share with one link
 - Public and Private are gone, and so is the Public CVs page. Your CV stays in your browser.
 - Share makes one link that carries your CV inside it. Nothing is stored online.
@@ -12,7 +17,7 @@
 - The homepage says what the tool is: a clear CV in one standard format, from a PDF you have or a blank page.
 - How it works comes first, then private or shared, then the examples. The recruiter check and job-ad tips are extras.
 - The Why page tells one idea: a CV should be a standard format, not a design project. No moving words, no counters.
-- Who made it is now in the footer, as a short CV with email and LinkedIn. About is no longer in the menu.
+- Who made it is now in the footer, as a short CV with email and LinkedIn.
 
 ### More examples, and an About page
 - 34 example CVs, from first jobs to senior roles: waiter, delivery rider, student, care assistant, bus driver, head chef, CTO and more.
