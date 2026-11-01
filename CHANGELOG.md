@@ -8,6 +8,11 @@
 - The link shows your CV as it is now. Changed it? Share a new link.
 - The examples page is now called Example CVs.
 
+### More examples, and an About page
+- 34 example CVs, from first jobs to senior roles: waiter, delivery rider, student, care assistant, bus driver, head chef, CTO and more.
+- Filter the examples by level: first job, experienced, or senior and lead.
+- A new About page says who made the site. The Why page keeps to the idea.
+
 ### Clearer, and honest when something goes wrong
 - Error messages are easier to read: dark text with a small red dot.
 

@@ -1,19 +1,45 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Info, Plus, Search, X } from 'lucide-react';
+import { Info, Plus, Search, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
 import { CVCard } from '../app/components/CVCard';
 import { Wordmark } from '../app/components/Wordmark';
-import { fields, people, type Field } from '../app/cv/people';
+import { fields, levels, people, type Field, type Level } from '../app/cv/people';
 import { useReveal } from '../app/hooks/useReveal';
 import { fmt, useI18n } from '../app/i18n';
 
 const label = 'whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
+const pill = (on: boolean) =>
+  `group inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-ink px-3.5 py-1.5 text-[14px] sm:min-h-0 ${on ? 'bg-highlight font-body italic text-[#111]' : 'hover:bg-zinc-100'}`;
+
+/** One row of filter pills: All, then each value. Pressing the active value again clears it. */
+function Pills<T extends string>({ title, all, values, labelOf, active, onChange }: {
+  title: string; all: string; values: T[]; labelOf: (v: T) => string; active: T | null; onChange: (v: T | null) => void;
+}) {
+  return (
+    <div role="group" aria-label={title} className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <span className={`${label} mr-1 w-14 shrink-0`} aria-hidden="true">{title}</span>
+      <button type="button" aria-pressed={active === null} onClick={() => onChange(null)} className={pill(active === null)}>
+        {all}
+      </button>
+      {values.map((v) => {
+        const on = active === v;
+        return (
+          <button key={v} type="button" aria-pressed={on} onClick={() => onChange(on ? null : v)} className={pill(on)}>
+            {labelOf(v)}
+            {on ? <X size={20} aria-hidden="true" /> : <Plus size={20} aria-hidden="true" className="transition-transform group-hover:rotate-90 motion-reduce:transition-none" />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function People() {
   const { m } = useI18n();
   const d = m.directory;
   const [query, setQuery] = useState('');
   const [active, setActive] = useState<Field | null>(null);
+  const [level, setLevel] = useState<Level | null>(null);
   const titleRef = useReveal<HTMLDivElement>(0.3);
 
   useEffect(() => {
@@ -24,11 +50,12 @@ export function People() {
     const q = query.trim().toLowerCase();
     return people.filter((p) => {
       if (active && p.field !== active) return false;
+      if (level && p.level !== level) return false;
       if (!q) return true;
       const hay = [p.cv.profile.name, p.cv.profile.headline, p.cv.profile.location, ...p.cv.skills].join(' ').toLowerCase();
       return hay.includes(q);
     });
-  }, [query, active]);
+  }, [query, active, level]);
 
   const usedFields = fields.filter((f) => people.some((p) => p.field === f));
 
@@ -67,31 +94,8 @@ export function People() {
               className="h-full flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-soft"
             />
           </label>
-          <div role="group" aria-label={d.title} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-            <button
-              type="button"
-              aria-pressed={active === null}
-              onClick={() => setActive(null)}
-              className={`inline-flex min-h-11 shrink-0 items-center rounded-full border border-ink px-3.5 py-1.5 text-[14px] sm:min-h-0 ${active === null ? 'bg-highlight font-body italic text-[#111]' : 'hover:bg-zinc-100'}`}
-            >
-              {d.all}
-            </button>
-            {usedFields.map((f) => {
-              const on = active === f;
-              return (
-                <button
-                  key={f}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setActive(on ? null : f)}
-                  className={`group inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-ink px-3.5 py-1.5 text-[14px] sm:min-h-0 ${on ? 'bg-highlight font-body italic text-[#111]' : 'hover:bg-zinc-100'}`}
-                >
-                  {m.fields[f]}
-                  {on ? <X size={20} aria-hidden="true" /> : <Plus size={20} aria-hidden="true" className="transition-transform group-hover:rotate-90 motion-reduce:transition-none" />}
-                </button>
-              );
-            })}
-          </div>
+          <Pills<Level> title={d.byLevel} all={d.all} values={levels} labelOf={(l) => m.levels[l]} active={level} onChange={setLevel} />
+          <Pills<Field> title={d.byField} all={d.all} values={usedFields} labelOf={(f) => m.fields[f]} active={active} onChange={setActive} />
         </div>
 
         <div className="mt-14 flex items-baseline justify-between gap-4 border-t border-ink pt-4">

@@ -12,12 +12,13 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      // Four pages: the homepage at /, the CV tool at /app/, the example CVs at /people/ and why it exists at /why/.
+      // Five pages: the homepage at /, the CV tool at /app/, the example CVs at /people/, why it exists at /why/ and who made it at /about/.
       input: {
         home: path.resolve(__dirname, 'index.html'),
         app: path.resolve(__dirname, 'app/index.html'),
         people: path.resolve(__dirname, 'people/index.html'),
         why: path.resolve(__dirname, 'why/index.html'),
+        about: path.resolve(__dirname, 'about/index.html'),
       },
     },
   },

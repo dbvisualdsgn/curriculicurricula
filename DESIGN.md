@@ -76,7 +76,7 @@ PDF embeds the same title and text fonts.
   ("Edit", "PDF"), the rest are icons with names for screen readers, and the reading group drops to its own
   row. Buttons are 44px tall on phones, 36px from `md`.
 - **Site header on phones:** below `md` the links sit behind a Menu button (a disclosure panel, not a
-  popover): Open my CV first, then Why and Example CVs. Below `sm` the reading controls move into the panel.
+  popover): Open my CV first, then Why, About and Example CVs. Below `sm` the reading controls move into the panel.
 - **Recruiter check on the page:** the black frame shows only while "Recruiter check" is on in the CV menu.
   "See the full check" opens every tip under it, each with the points it adds. The editor holds only the CV's content.
 - **Recruiter check score:** every criterion earns points and they add up to exactly 100 (`src/app/cv/atsCheck.ts`):

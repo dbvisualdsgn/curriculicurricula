@@ -68,7 +68,7 @@ export const en = {
   directory: {
     nav: 'Example CVs',
     title: 'Example CVs',
-    intro: 'Made-up example CVs to get you started, by field.',
+    intro: 'Made-up example CVs, from first jobs to senior roles.',
     examples: 'These are example profiles, made up to show how CVs look here.',
     search: 'Search by name, role or skill',
     all: 'All',
@@ -77,6 +77,8 @@ export const en = {
     empty: 'No CV matches that. Try another word.',
     banner: 'An example CV.',
     examplesTitle: 'Examples',
+    byLevel: 'Level',
+    byField: 'Field',
   },
   fields: {
     health: 'Health',
@@ -91,6 +93,7 @@ export const en = {
     law: 'Law',
     marketing: 'Marketing',
     support: 'Support',
+    hr: 'HR',
   },
   homeX: {
     atsTitle: 'What the recruiter check looks at',
@@ -411,6 +414,30 @@ export const en = {
     useAsHeadline: 'Use as headline',
     headlineSet: 'Headline updated',
   },
+  about: {
+    nav: 'About',
+    kicker: 'About',
+    lead: 'Graphic designer. Lives near Rennes, in Brittany.',
+    whoTitle: 'A designer, and many CVs',
+    who1: 'Daniele has worked as a graphic designer since 2013.',
+    who2: 'Over the years, Daniele has also helped many people with their CVs: friends, family, colleagues, friends of friends.',
+    sawTitle: 'What kept coming back',
+    sawLead: 'Every time, the same three things.',
+    saw1: 'People who are great at their job, stuck in front of a blank page.',
+    saw2: 'Beautiful CVs that no software could read.',
+    saw3: 'Clear CVs that nobody looked at twice.',
+    sawEnd: 'A good CV shouldn’t depend on knowing a designer.',
+    madeTitle: 'One template, for everyone',
+    made1: '{name} started there: one CV, designed once and with care, like a passport.',
+    made2: 'Free, with no account and no ads. Your data isn’t sold. The code is public on GitHub, so anyone can see how it works.',
+    whyLink: 'Why it exists',
+    photoAlt: 'Daniele Brusca, smiling, in a rain jacket on a beach.',
+  },
+  levels: {
+    entry: 'First job',
+    mid: 'Experienced',
+    senior: 'Senior and lead',
+  },
   why: {
     nav: 'Why',
     kicker: 'Why it exists',
@@ -435,10 +462,6 @@ export const en = {
     idea1: 'Nobody asks us to design our own passport. It’s a document designed once, with care, the same for everyone.',
     idea2: 'A CV isn’t. Everyone has to invent their own: typefaces, columns, colours and words. As if everyone had to design their own ID card.',
     idea3: '{name} was made to change that.',
-    originTitle: 'Where it came from',
-    origin1: 'I’m Daniele Brusca. I’ve been a graphic designer since 2013. Since then, besides my own, I’ve helped many people with their CVs: friends, family, colleagues, friends of friends.',
-    origin2: 'I’ve seen people who are great at their job stuck in front of a blank page. I’ve seen beautiful CVs that no software could read, and clear CVs nobody looked at twice.',
-    quote: 'A good CV shouldn’t depend on knowing a designer.',
     doesTitle: 'What it does',
     doesLead: 'One template, made to be read: by a person with a few seconds, and by software looking for keywords.',
     does1t: 'Write',
@@ -464,6 +487,7 @@ export const en = {
     all3: 'Built for screen readers and keyboards',
     all4: 'Code public on GitHub',
     allEnd: 'Your CV is the first document of your working life. It should be simple, clear and free. For everyone.',
+    aboutLink: 'Who made it',
   },};
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> 
