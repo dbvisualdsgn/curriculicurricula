@@ -5,7 +5,6 @@ import { CVCard } from '../app/components/CVCard';
 import { Wordmark } from '../app/components/Wordmark';
 import { fields, people, type Field } from '../app/cv/people';
 import { useReveal } from '../app/hooks/useReveal';
-import { PublicCVs } from './PublicCVs';
 import { fmt, useI18n } from '../app/i18n';
 
 const label = 'whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
@@ -95,13 +94,10 @@ export function People() {
           </div>
         </div>
 
-        {active === null && <PublicCVs query={query} />}
-
         <div className="mt-14 flex items-baseline justify-between gap-4 border-t border-ink pt-4">
           <h2 className="font-title text-3xl md:text-4xl">{d.examplesTitle}</h2>
           <p className="font-mono text-[12px] text-ink-soft" aria-live="polite">{fmt(d.count, { count: list.length })}</p>
         </div>
-        {/* Said where it applies: the made-up profiles, not the CVs people shared above. */}
         <p className="mt-3 flex items-start gap-2 text-[13px] text-ink-soft">
           <Info size={20} aria-hidden="true" className="mt-0.5 shrink-0" />
           {d.examples}

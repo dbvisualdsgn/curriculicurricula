@@ -32,7 +32,6 @@ function cv(p: {
   const handle = p.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]+/g, '.');
   return {
     version: 1,
-    isPublic: true,
     profile: { name: p.name, headline: p.headline, email: `${handle}@example.com`, phone: '', location: p.location, website: '', linkedin: '', avatar: p.avatar ?? 'none' },
     summary: p.summary,
     skills: p.skills,

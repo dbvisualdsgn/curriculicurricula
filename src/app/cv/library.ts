@@ -11,16 +11,7 @@ export interface CVEntry {
   cv: CVData;
   /** A version name only the person sees, e.g. "Product Designer, Doctolib". */
   name?: string;
-  /** Set once the CV has been made public: its id on the public CV server and the secret that controls it. */
-  publicId?: string;
-  ownerToken?: string;
-  /** Shown on the Public CVs page (only while public). */
-  listed?: boolean;
-  /** Fingerprint of the version last published, so an unchanged CV is never sent again. */
-  publishedHash?: string;
 }
-
-export type PublicMeta = Pick<CVEntry, 'publicId' | 'ownerToken' | 'listed' | 'publishedHash'>;
 
 interface Library {
   activeId: string;
@@ -55,10 +46,6 @@ function load(): Library {
           updatedAt: Number(it.updatedAt) || Date.now(),
           cv: normalize(it.cv),
           ...(typeof it.name === 'string' && it.name ? { name: it.name } : {}),
-          ...(typeof it.publicId === 'string' && /^[a-z0-9]{10}$/.test(it.publicId) ? { publicId: it.publicId } : {}),
-          ...(typeof it.ownerToken === 'string' && it.ownerToken.length >= 32 ? { ownerToken: it.ownerToken } : {}),
-          ...(it.listed === true ? { listed: true } : {}),
-          ...(typeof it.publishedHash === 'string' ? { publishedHash: it.publishedHash.slice(0, 20) } : {}),
         }));
       if (items.length) {
         return { activeId: items.some((i) => i.id === lib.activeId) ? lib.activeId : items[0].id, items };
@@ -108,17 +95,10 @@ export function useLibrary() {
     return e.id;
   }, []);
 
-  /** Copy the open CV as a new named version and open the copy; the original stays as it was.
-   *  The copy starts private: it has its own public life, if any. */
+  /** Copy the open CV as a new named version and open the copy; the original stays as it was. */
   const duplicate = useCallback(
-    (name: string) => create({ ...structuredClone(active.cv), isPublic: false }, name.trim() || undefined),
+    (name: string) => create(structuredClone(active.cv), name.trim() || undefined),
     [active, create],
-  );
-
-  /** Remember (or forget) the open CV's public id, owner secret and listing choice. */
-  const setPublicMeta = useCallback(
-    (meta: PublicMeta) => setLib((l) => ({ ...l, items: l.items.map((i) => (i.id === l.activeId ? { ...i, ...meta } : i)) })),
-    [],
   );
 
   /** Rename the open version. */
@@ -143,9 +123,8 @@ export function useLibrary() {
     [],
   );
 
-  const publicMeta: PublicMeta = { publicId: active.publicId, ownerToken: active.ownerToken, listed: active.listed, publishedHash: active.publishedHash };
   return {
-    cv: active.cv, activeId: active.id, versionName: active.name ?? '', publicMeta, items: lib.items,
-    update, setCV, create, duplicate, rename, setPublicMeta, select, remove,
+    cv: active.cv, activeId: active.id, versionName: active.name ?? '', items: lib.items,
+    update, setCV, create, duplicate, rename, select, remove,
   };
 }

@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      // Four pages: the homepage at /, the CV tool at /app/, the public CVs at /people/ and why it exists at /why/.
+      // Four pages: the homepage at /, the CV tool at /app/, the example CVs at /people/ and why it exists at /why/.
       input: {
         home: path.resolve(__dirname, 'index.html'),
         app: path.resolve(__dirname, 'app/index.html'),

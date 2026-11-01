@@ -1,5 +1,5 @@
-// Reading CVs from storage, files, links and the public CV server: fill in whatever is missing so older
-// data still renders, and keep only safe values, since a public CV may come from anyone.
+// Reading CVs from storage, files and share links: fill in whatever is missing so older data still renders,
+// and keep only safe values, since a shared link may come from anyone.
 import { blankCV, newId } from './defaultCV';
 import type { CVData } from './types';
 
@@ -24,7 +24,6 @@ export function normalize(input: unknown): CVData {
   const p = obj(data.profile);
   return {
     version: 1,
-    isPublic: data.isPublic === true,
     profile: {
       ...blankCV.profile,
       name: str(p.name, 200),
