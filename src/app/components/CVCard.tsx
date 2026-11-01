@@ -35,7 +35,7 @@ export function CVCard({ person, root, copy, className = '' }: CVCardProps) {
           <Portrait photo={avatar === 'photo' ? `${root}${person.photo}` : undefined} name={name} className="aspect-square w-16 text-[1.75rem]" />
         )}
         <span className="min-w-0">
-          <span className={`block ${microLabel}`}>{m.fields[person.field]}</span>
+          <span className={`block ${microLabel}`}>{m.fields[person.field]} · {m.levels[person.level]}</span>
           <span className="mt-2 block font-title text-[26px] leading-[0.95] hyphens-auto [overflow-wrap:anywhere]">{name}</span>
           <span className="mt-2 block font-title text-[15px] leading-snug text-ink-soft">{headline}</span>
         </span>

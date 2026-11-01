@@ -7,13 +7,16 @@ The original design is available at https://www.figma.com/design/68PhbcZDT2IDB8n
 ## Pages
 
 - `/` is the homepage (`index.html` → `src/home/`): claim, subtitle and hero CVs, example CVs, how it works, recruiter
-  check, private or public, quick answers.
+  check, private or shared, quick answers.
 - `/app/` is the CV tool (`app/index.html` → `src/app/`). `app/?new=1` starts writing and `app/?person=<id>` opens an example CV.
-  Old `app/?example=1` links go to `/people/`. `app/?id=<id>` opens a public CV.
-- `/people/` lists public CVs (`people/index.html` → `src/people/`). The 17 profiles in `src/app/cv/people.ts` are fictional examples.
+  Old `app/?example=1` links go to `/people/`. `app/#cv=…` opens a shared CV, read-only.
+- `/people/` lists example CVs (`people/index.html` → `src/people/`), filtered by level (first job, experienced, senior and lead)
+  and by field. The 34 profiles in `src/app/cv/people.ts` are fictional: from waiter, rider and student to head chef and CTO.
 - `/why/` explains why the project exists (`why/index.html` → `src/why/`): one person's passport, driving licence and CV,
-  animated (paused by a button, still under reduced motion), then the idea, where it came from, what it does and doesn't do,
+  animated (paused by a button, still under reduced motion), then the idea, what it does and doesn't do,
   your data, and who it's for.
+- `/about/` is about who made it (`about/index.html` → `src/about/`), told in the third person, with a black-and-white
+  portrait (`public/about/daniele.jpg`). Parts shared with `/why/` live in `src/why/parts.tsx`.
 
 **My CVs:** keep several CVs in the same browser (`src/app/cv/library.ts`). Switch, create and delete them from the
 "My CVs" menu and the editor. An older single CV is migrated automatically.
@@ -24,9 +27,8 @@ split into sections using multilingual headings, month names and date ranges (`s
 two-column layouts column by column and letter-spaced headings ("P R O F I L E"); `importPdf.test.ts` checks this on
 the PDFs in `src/app/cv/__fixtures__`. Check the result in the editor; scanned PDFs without text can't be read.
 
-**Private / Public:** a CV is private by default: it stays in the browser and sharing is off. Making it public saves a
-copy online (Supabase, see `supabase/schema.sql`) so its link works; making it private again deletes that copy.
-Showing it on the Public CVs page is a separate choice.
+**Share:** a CV stays in the browser. **Share** makes a link that carries the whole CV inside it (`src/app/cv/share.ts`),
+so nothing is stored online.
 
 **Downloads:** "As on the page" builds a PDF with the same layout, embedded fonts (`public/fonts`: Switzer and Gambetta by the Indian Type Foundry via Fontshare, IBM Plex Mono under the SIL OFL), logos and
 photo. "ATS plain" builds the one-column, text-only version for job portals.
@@ -50,38 +52,21 @@ Type a tool or company name and its official logo is added automatically. Click 
 4,400 brands or upload your own. Logos come from the Iconify "logos" set and Simple Icons (both CC0).
 `npm run icons` regenerates `src/app/cv/brandIcons.ts` and `src/app/cv/icon-catalog/` after updating either package.
 
-## Private and public
+## Sharing
 
-Every CV starts **private**: it lives only in your browser's storage, has no link, and nobody else can open it.
-You can still download it as a PDF.
+Every CV lives only in your browser's storage. Nobody else can open it until you share it.
 
-Switching it to **public** (after a short confirmation) stores a copy on a small Supabase database so it can be
-reached from anywhere:
+**Share** builds one link (`…/app/#cv=…`) that carries the whole CV inside it: the CV is compressed (deflate),
+encoded (base64url) and put in the URL fragment, which browsers never send to a server. Nothing is stored online,
+and there is no backend.
 
-- **One link** (`…/app/?id=ab12cd34ef`) that always shows the latest version: edits are re-published about two
-  seconds after you stop typing.
-- **Embed code**: an `<iframe>` with a compact, read-only view (`&embed=1`) for a personal site or portfolio.
-- **Public CVs page** (opt-in): tick "Show it on the Public CVs page" to be listed on `/people/`. Listed CVs can be
-  reported (spam, someone else's data, offensive); reports land in the `cv_reports` table.
-- Switching back to **private** deletes the public copy, so the link, embeds and listing stop working at once.
-  Deleting a public CV takes it down first.
+- The link shows the CV as it was when you copied it. After an edit, share a new link.
+- Whoever opens it reads the CV read-only, and can edit a copy in their own browser.
+- A photo makes the link long (around 50 KB). Some chat and mail apps cut long links; the dialog says so, and
+  the PDF is always there instead.
+- A link can't be withdrawn: anyone who has it keeps the CV it carries.
 
-There are no accounts. Making a CV public creates a random id and a secret owner token in your browser; only the
-token's SHA-256 is stored, and only that browser can update or withdraw the copy. Everything that comes from the
-server is sanitised before it is shown (images must be our own data URLs or built-in logo tokens).
-
-Links made by earlier versions carried the whole CV in the URL fragment (`#cv=…`). They still open, but they are no
-longer created, and they cannot be withdrawn.
-
-### Setting up the public CV server
-
-1. Create a free project at [supabase.com](https://supabase.com).
-2. In **SQL Editor**, run [`supabase/schema.sql`](supabase/schema.sql). It creates the tables, row-level security
-   (anyone can read public CVs; writes only through the token-checked functions) and the functions.
-3. In **Project Settings → API**, copy the Project URL and the `anon` public key into `.env` (see `.env.example`).
-   Both are meant to be public. Without them the site still works, but CVs can't be made public.
-
-Set `VITE_PUBLIC_URL` at build time if public links should point to a different address than the current site.
+Links from the old public CV server (`app/?id=…`) no longer open a CV.
 
 ### Renaming the GitHub repository
 

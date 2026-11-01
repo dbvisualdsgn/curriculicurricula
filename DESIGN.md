@@ -69,14 +69,14 @@ PDF embeds the same title and text fonts.
 - **CV sheet:** the CV sits on one sheet with a hairline edge and a soft shadow. The sheet has no fill of its
   own: it is the `paper` the person chose in Light, so each CV looks like its own setting, not one fixed white. Print drops the sheet. Next to the name, on the left, the person picks nothing,
   their initials (a black square) or a photo (square, no rounding, grayscale, 480px). The PDF follows the same choice.
-- **CV page bars:** row 1 is the site (wordmark, My CVs, Public CVs). Row 2 is the CV menu, in three groups:
+- **CV page bars:** row 1 is the site (wordmark, My CVs, Example CVs). Row 2 is the CV menu, in three groups:
   write and check (Edit, Recruiter check) · how the page reads (typefaces, language, light) · who
-  gets it (Private/Public, Share, Download). Download is the one filled (primary) button. Delete lives in
+  gets it (Share, Download). Download is the one filled (primary) button. Delete lives in
   My CVs, away from Download. Labels show from `md`; on phones Edit and Download keep a short label
   ("Edit", "PDF"), the rest are icons with names for screen readers, and the reading group drops to its own
-  row with the Private/Public switch. Buttons are 44px tall on phones, 36px from `md`.
+  row. Buttons are 44px tall on phones, 36px from `md`.
 - **Site header on phones:** below `md` the links sit behind a Menu button (a disclosure panel, not a
-  popover): Open my CV first, then Why and Public CVs. Below `sm` the reading controls move into the panel.
+  popover): Open my CV first, then Why, About and Example CVs. Below `sm` the reading controls move into the panel.
 - **Recruiter check on the page:** the black frame shows only while "Recruiter check" is on in the CV menu.
   "See the full check" opens every tip under it, each with the points it adds. The editor holds only the CV's content.
 - **Recruiter check score:** every criterion earns points and they add up to exactly 100 (`src/app/cv/atsCheck.ts`):
@@ -114,7 +114,7 @@ Motion is allowed only where it helps reading, and it never hides content for lo
 - **Count-up on scores:** score numbers count up once (`useCountUp`), about 0.7–1.1s.
 - **Small details:** the highlighter stroke draws in, score bars grow, arrows nudge 2–3px on hover,
   a black dot travels the privacy diagram (to "Saved here" for Private, along the whole link for
-  Public), the hero caret blinks, switches slide.
+  Share link), the hero caret blinks, switches slide.
 - **Example CV gallery (homepage):** two rows of example CVs drift slowly in opposite directions (90s per
   loop). They stop on hover, on keyboard focus and with the Pause button (WCAG 2.2.2). With keyboard focus
   a row becomes the still, scrollable row and the focused card scrolls into view.

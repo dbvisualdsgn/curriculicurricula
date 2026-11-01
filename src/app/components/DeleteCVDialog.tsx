@@ -16,20 +16,18 @@ interface DeleteCVDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   name: string;
-  isPublic: boolean;
   onDelete: () => Promise<boolean>;
 }
 
-/** Asks before deleting the open CV from this browser. Opened from My CVs, away from Download.
- *  A public CV is taken down first, so the warning says its link stops working. */
-export function DeleteCVDialog({ open, onOpenChange, name, isPublic, onDelete }: DeleteCVDialogProps) {
+/** Asks before deleting the open CV from this browser. Opened from My CVs, away from Download. */
+export function DeleteCVDialog({ open, onOpenChange, name, onDelete }: DeleteCVDialogProps) {
   const { m } = useI18n();
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="rounded-sm border-ink bg-paper text-ink">
         <AlertDialogHeader>
           <AlertDialogTitle className="font-title text-2xl font-normal">{fmt(m.library.deleteTitle, { name: name || m.library.untitled })}</AlertDialogTitle>
-          <AlertDialogDescription className="text-ink-soft">{isPublic ? m.library.deleteBodyPublic : m.library.deleteBody}</AlertDialogDescription>
+          <AlertDialogDescription className="text-ink-soft">{m.library.deleteBody}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="rounded-sm">{m.library.cancel}</AlertDialogCancel>

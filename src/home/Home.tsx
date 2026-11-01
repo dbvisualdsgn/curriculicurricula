@@ -103,18 +103,18 @@ function AtsInfographic() {
   );
 }
 
-type Mode = 'private' | 'public';
+type Mode = 'private' | 'link';
 
 
-/** How the CV moves (or doesn't): private keeps it in this browser, public sends it inside one link. */
+/** How the CV moves (or doesn't): private keeps it in this browser, a share link carries it inside the link. */
 function FlowDiagram({ mode }: { mode: Mode }) {
   const { m } = useI18n();
   const h = m.homeX;
-  const isPublic = mode === 'public';
-  const nodes = isPublic
+  const isLink = mode === 'link';
+  const nodes = isLink
     ? [
         { icon: Monitor, text: h.linkA },
-        { icon: Link2, text: h.linkB, note: '…/app/?id=ab12cd34ef', mark: true },
+        { icon: Link2, text: h.linkB, note: '…/app/#cv=…', mark: true },
         { icon: Users, text: h.linkC },
       ]
     : [
@@ -125,7 +125,7 @@ function FlowDiagram({ mode }: { mode: Mode }) {
   return (
     <figure key={mode} className="diagram-in mt-12">
       <div className="relative grid grid-cols-3 items-start" aria-hidden="true">
-        {isPublic ? (
+        {isLink ? (
           // One line all the way: the CV travels inside the link to whoever opens it.
           <div className="absolute left-[16.66%] right-[16.66%] top-7 h-px bg-ink">
             <span className="link-dot absolute -top-[4px] left-0 h-[9px] w-[9px] rounded-full bg-ink" />
@@ -156,26 +156,26 @@ function FlowDiagram({ mode }: { mode: Mode }) {
           </div>
         ))}
       </div>
-      <figcaption className="mx-auto mt-10 max-w-[46ch] text-center font-body text-lg text-ink-soft">{isPublic ? h.linkNote : h.privNote}</figcaption>
+      <figcaption className="mx-auto mt-10 max-w-[46ch] text-center font-body text-lg text-ink-soft">{isLink ? h.linkNote : h.privNote}</figcaption>
     </figure>
   );
 }
 
-/** Private and Public as two tabs; the diagram below shows how the chosen one works. Private first. */
+/** Private and Share link as two tabs; the diagram below shows how the chosen one works. Private first. */
 function PrivacyTabs() {
   const { m } = useI18n();
   const h = m.home;
   const hx = m.homeX;
   const [mode, setMode] = useState<Mode>('private');
-  const refs = useRef<Record<Mode, HTMLButtonElement | null>>({ private: null, public: null });
+  const refs = useRef<Record<Mode, HTMLButtonElement | null>>({ private: null, link: null });
   const tabs: { id: Mode; icon: typeof Lock; title: string; body: string }[] = [
     { id: 'private', icon: Lock, title: h.privateT, body: h.privateB },
-    { id: 'public', icon: Link2, title: h.publicT, body: h.publicB },
+    { id: 'link', icon: Link2, title: h.linkT, body: h.linkB },
   ];
   const onKey = (e: React.KeyboardEvent) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
     e.preventDefault();
-    const next: Mode = e.key === 'Home' ? 'private' : e.key === 'End' ? 'public' : mode === 'private' ? 'public' : 'private';
+    const next: Mode = e.key === 'Home' ? 'private' : e.key === 'End' ? 'link' : mode === 'private' ? 'link' : 'private';
     setMode(next);
     refs.current[next]?.focus();
   };
@@ -212,7 +212,7 @@ function PrivacyTabs() {
         })}
       </div>
       <div id="privacy-panel" role="tabpanel" aria-labelledby={`privacy-tab-${mode}`} className="mt-16">
-        <h3 className={label}>{mode === 'public' ? hx.linkTitle : hx.privTitle}</h3>
+        <h3 className={label}>{mode === 'link' ? hx.linkTitle : hx.privTitle}</h3>
         <FlowDiagram mode={mode} />
       </div>
     </>

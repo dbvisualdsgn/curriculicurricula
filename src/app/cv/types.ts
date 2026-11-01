@@ -60,8 +60,6 @@ export interface Language {
 
 export interface CVData {
   version: 1;
-  /** Private (default) keeps sharing off; public turns on share links. */
-  isPublic?: boolean;
   profile: Profile;
   summary: string;
   skills: string[];

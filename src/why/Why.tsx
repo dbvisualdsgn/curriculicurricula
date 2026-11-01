@@ -1,55 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Accessibility, ArrowRight, Github, Languages, Link2, Lock, Pause, Play, Smartphone, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
-import { Wordmark } from '../app/components/Wordmark';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
 import { Documents } from './Documents';
+import { Closing, PageFooter, Part, WithName, body, label, textLink, wrap } from './parts';
 
-const APP = '../app/';
-const label = 'font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
-const primaryBtn = 'nudge inline-flex h-12 items-center gap-3 rounded-sm bg-ink px-5 text-[15px] font-medium text-paper hover:opacity-90';
-const textLink = 'inline-flex items-center gap-1.5 text-[15px] text-ink underline decoration-1 underline-offset-[6px] hover:decoration-2';
-const body = 'max-w-[46ch] font-body text-lg leading-relaxed text-ink-soft';
-const wrap = 'mx-auto max-w-6xl xl:max-w-none xl:px-12 px-4 sm:px-8';
 const reducedMotion = () => Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-
-/** The name as the brand writes it, inside a sentence. */
-function Name() {
-  return (
-    <span className="whitespace-nowrap">
-      curriculi <em>curricula</em>
-    </span>
-  );
-}
-
-/** "{name} …" with the brand set in place. */
-function WithName({ text }: { text: string }) {
-  const [before, after] = text.split('{name}');
-  return (
-    <>
-      {before}
-      <Name />
-      {after}
-    </>
-  );
-}
-
-/** A numbered part of the page: number and title on the left, the text on the right. */
-function Part({ id, n, title, children }: { id: string; n: number; title: string; children: React.ReactNode }) {
-  const ref = useReveal<HTMLElement>(0.12);
-  return (
-    <section ref={ref} aria-labelledby={id} className="reveal border-t border-ink">
-      <div className={`${wrap} grid gap-8 py-16 md:py-24 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16`}>
-        <div>
-          <p className="font-title text-[72px] leading-none md:text-[112px]" aria-hidden="true">{n}.</p>
-          <h2 id={id} className="mt-6 font-title text-3xl leading-[1.05] hyphens-auto [overflow-wrap:anywhere] md:text-5xl">{title}</h2>
-        </div>
-        <div className="min-w-0 lg:pt-4">{children}</div>
-      </div>
-    </section>
-  );
-}
 
 /** Words drifting across the page, between the opening and the documents. Decorative: the same words are on the page. */
 function Ticker() {
@@ -79,7 +36,6 @@ function Ticker() {
 export function Why() {
   const { m } = useI18n();
   const w = m.why;
-  const h = m.home;
   const [paused, setPaused] = useState(false);
   const [still] = useState(reducedMotion);
   const heroRef = useReveal<HTMLDivElement>(0.1);
@@ -155,18 +111,13 @@ export function Why() {
               <WithName text={w.idea3} />
             </span>
           </p>
+          <a href="../about/" className={`nudge mt-10 ${textLink}`}>
+            {w.aboutLink}
+            <ArrowRight size={20} aria-hidden="true" />
+          </a>
         </Part>
 
-        <Part id="origin" n={2} title={w.originTitle}>
-          <p className={body}>{w.origin1}</p>
-          <p className={`mt-4 ${body}`}>{w.origin2}</p>
-          <blockquote className="mt-10 bg-ink p-6 text-paper md:p-10">
-            <p className="font-title text-3xl leading-[1.05] md:text-5xl">{w.quote}</p>
-            <footer className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em]">Daniele Brusca</footer>
-          </blockquote>
-        </Part>
-
-        <Part id="does" n={3} title={w.doesTitle}>
+        <Part id="does" n={2} title={w.doesTitle}>
           <p className="max-w-[34ch] font-body text-2xl leading-snug md:text-3xl">{w.doesLead}</p>
           <ol className="mt-10 grid gap-px border border-ink bg-ink sm:grid-cols-2">
             {does.map(([t, d], i) => (
@@ -180,7 +131,7 @@ export function Why() {
           <p className="mt-10 font-title text-2xl leading-tight md:text-3xl">{w.doesEnd}</p>
         </Part>
 
-        <Part id="not" n={4} title={w.notTitle}>
+        <Part id="not" n={3} title={w.notTitle}>
           <ul className="border-t border-ink">
             {[w.not1, w.not2, w.not3].map((t) => (
               <li key={t} className="flex items-center gap-4 border-b border-rule py-4 font-title text-2xl md:text-3xl">
@@ -192,7 +143,7 @@ export function Why() {
           <p className={`mt-8 ${body}`}>{w.notJob}</p>
         </Part>
 
-        <Part id="data" n={5} title={w.dataTitle}>
+        <Part id="data" n={4} title={w.dataTitle}>
           <ul className="grid gap-px border border-ink bg-ink md:grid-cols-2">
             {[
               { icon: Lock, text: w.data1 },
@@ -206,7 +157,7 @@ export function Why() {
           </ul>
         </Part>
 
-        <Part id="all" n={6} title={w.allTitle}>
+        <Part id="all" n={5} title={w.allTitle}>
           <ul className="grid gap-px border border-ink bg-ink sm:grid-cols-2">
             {forAll.map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-center gap-4 bg-paper p-6">
@@ -218,30 +169,10 @@ export function Why() {
           <p className="mt-10 max-w-[34ch] font-body text-2xl leading-snug md:text-3xl">{w.allEnd}</p>
         </Part>
 
-        {/* Closing */}
-        <section className="border-t border-ink">
-          <div className={`${wrap} py-20 md:py-32`}>
-            <p className="font-title text-[clamp(2.75rem,8vw,6.5rem)] leading-[0.95]">
-              <span className="hl">{h.closing}</span>
-            </p>
-            <a href={`${APP}?new=1`} className={`${primaryBtn} mt-10`}>
-              {h.closingCta}
-              <ArrowRight size={20} aria-hidden="true" />
-            </a>
-          </div>
-        </section>
+        <Closing root="../" />
       </main>
 
-      <footer className="border-t border-ink">
-        <div className={`${wrap} flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between`}>
-          <Wordmark href="../" />
-          <p className="font-body text-[15px] text-ink-soft">{h.footer}</p>
-          <a href="https://github.com/dbvisualdsgn/Careerpath" className={textLink} rel="noopener noreferrer" target="_blank">
-            <Github size={20} aria-hidden="true" />
-            {h.source}
-          </a>
-        </div>
-      </footer>
+      <PageFooter root="../" />
     </div>
   );
 }

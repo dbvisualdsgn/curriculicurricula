@@ -1,6 +1,6 @@
 import { ReadingControls } from './components/ReadingControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Mail, Share2, Phone, MapPin, Linkedin, PencilLine, Eye, Globe, Loader2, Lock } from 'lucide-react';
+import { Mail, Share2, Phone, MapPin, Linkedin, PencilLine, Eye, Globe } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 import { TooltipProvider } from './components/ui/tooltip';
@@ -21,16 +21,12 @@ import { DeleteCVDialog } from './components/DeleteCVDialog';
 import { AtsPanel } from './components/editor/AtsPanel';
 import { JobAdCard } from './components/JobAdCard';
 import { BeyondNote, beyondNoteWanted } from './components/BeyondNote';
-import { PrivacySwitch } from './components/PrivacySwitch';
 import { Portrait } from './components/Portrait';
 import { findPerson } from './cv/people';
 import { useReveal } from './hooks/useReveal';
 import { clearShareHash, readSharedCV } from './cv/share';
 import { blankCV } from './cv/defaultCV';
 import { ShareDialog } from './components/ShareDialog';
-import { PublishDialog } from './components/PublishDialog';
-import { usePublishing } from './cv/usePublishing';
-import { fetchPublicCV, isBackendReady, publicCVUrl } from './cv/backend';
 import type { CVData } from './cv/types';
 import { I18nProvider, fmt, useI18n } from './i18n';
 
@@ -86,22 +82,16 @@ function ScoreMark({ score, onInk = false }: { score: number; onInk?: boolean })
 }
 
 function CVPage() {
-  const { cv: ownCV, setCV, update, items, activeId, versionName, publicMeta, setPublicMeta, create, duplicate, rename, select, remove } = useLibrary();
-  const publishing = usePublishing({ cv: ownCV, meta: publicMeta, setMeta: setPublicMeta, update });
-  const [publishOpen, setPublishOpen] = useState(false);
+  const { cv: ownCV, setCV, update, items, activeId, versionName, create, duplicate, rename, select, remove } = useLibrary();
   const pdfRef = useRef<HTMLInputElement>(null);
   const { m, locale } = useI18n();
   // A CV opened from a share link (#cv=…) is shown read-only and never overwrites the visitor's own CV.
   const [sharedCV, setSharedCV] = useState<CVData | null>(null);
-  const [banner, setBanner] = useState<'shared' | 'directory' | 'public'>('shared');
-  // A public CV opened by its link (?id=…); ?embed=1 shows it compact, for iframes on other sites.
-  const [publicId] = useState(() => new URLSearchParams(window.location.search).get('id'));
-  const [embed] = useState(() => Boolean(publicId) && new URLSearchParams(window.location.search).has('embed'));
-  const [remote, setRemote] = useState<'idle' | 'loading' | 'missing'>(publicId ? 'loading' : 'idle');
+  const [banner, setBanner] = useState<'shared' | 'directory'>('shared');
   const cv = sharedCV ?? ownCV;
   const [shareOpen, setShareOpen] = useState(false);
   // A first visit (nothing saved, no shared or example CV in the URL) opens the editor: there is nothing to read yet.
-  const [editing, setEditing] = useState(() => !hadSavedCV && !/[?&](id|person)=/.test(window.location.search) && !window.location.hash.includes('cv='));
+  const [editing, setEditing] = useState(() => !hadSavedCV && !/[?&]person=/.test(window.location.search) && !window.location.hash.includes('cv='));
   const [editorTab, setEditorTab] = useState<EditorTab>('profile');
 
   useEffect(() => {
@@ -119,42 +109,12 @@ function CVPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!publicId) return;
-    fetchPublicCV(publicId)
-      .then((found) => {
-        if (!found) return setRemote('missing');
-        setSharedCV(found.cv);
-        setBanner('public');
-        setRemote('idle');
-      })
-      .catch(() => {
-        setRemote('missing');
-        toast.error(m.shared.loadError);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicId]);
-
-  /** The Public / Private switch: going public asks first; going private deletes the public copy. */
-  const togglePublic = async (next: boolean) => {
-    if (next) {
-      if (isBackendReady()) setPublishOpen(true);
-      else toast.error(m.share.notSetUp);
-      return;
-    }
-    const ok = await publishing.makePrivate();
-    if (ok) toast.success(m.publish.nowPrivate);
-    else toast.error(m.publish.privateFailed);
-  };
-
   const leaveShared = (next: CVData, openEditor: boolean) => {
     // Editing a copy or starting fresh adds a CV to the library; nothing the visitor had is overwritten.
     create(structuredClone(next));
     setSharedCV(null);
     setBanner('shared');
     clearShareHash();
-    if (publicId) history.replaceState(null, '', window.location.pathname);
-    setRemote('idle');
     if (openEditor) {
       setEditorTab('profile');
       setEditing(true);
@@ -177,6 +137,14 @@ function CVPage() {
       toast.error((err as { code?: string })?.code === 'no-text' ? m.library.pdfNoText : m.library.pdfError, { id });
     }
   };
+  // Links from the old public CV server (?id=…) no longer open anything: say so instead of showing another CV.
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has('id')) return;
+    toast.error(m.shared.loadError);
+    history.replaceState(null, '', `${window.location.pathname}${window.location.hash}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Entry points: ?new=1 (start writing) and ?person= (an example CV). Old ?example=1 links go to people/ (see app/index.html).
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -224,19 +192,13 @@ function CVPage() {
     setEditorTab(sectionTab[section]);
     setEditing(true);
   };
-  // A public CV is taken down before it is deleted, so no copy is left that nobody controls.
   const deleteOwn = async () => {
-    if (publishing.isPublic && !(await publishing.makePrivate())) {
-      toast.error(m.publish.privateFailed);
-      return false;
-    }
     remove(activeId);
     return true;
   };
   const { profile } = cv;
   const avatar = avatarOf(profile);
-  const bannerText =
-    banner === 'directory' ? m.directory.banner : banner === 'public' ? m.shared.publicBanner : m.shared.banner;
+  const bannerText = banner === 'directory' ? m.directory.banner : m.shared.banner;
   const name = profile.name || m.app.namePlaceholder;
   const headline = profile.headline || m.app.headlinePlaceholder;
 
@@ -286,7 +248,6 @@ function CVPage() {
       <PrintCV cv={cv} />
 
       <div className={`print:hidden ${editing ? 'lg:pl-[480px]' : ''}`}>
-        {!embed && (
         <header className="sticky top-0 z-40 w-full border-b border-rule bg-paper">
           {/* Row 1: the site. Row 2: everything you can do with this CV. */}
           <nav aria-label={m.app.home} className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-2 px-3 sm:px-6">
@@ -339,19 +300,9 @@ function CVPage() {
                 )}
               </div>
               <div className="order-last flex w-full flex-wrap items-center justify-between gap-1 border-t border-rule pt-1 md:order-none md:w-auto md:border-0 md:pt-0">
-                {!sharedCV && (
-                  <span className="md:hidden">
-                    <PrivacySwitch isPublic={publishing.isPublic} busy={publishing.busy} onChange={togglePublic} />
-                  </span>
-                )}
                 <ReadingControls />
               </div>
               <div className="flex flex-wrap items-center gap-0.5">
-                {!sharedCV && (
-                  <span className="hidden md:inline">
-                    <PrivacySwitch isPublic={publishing.isPublic} busy={publishing.busy} onChange={togglePublic} />
-                  </span>
-                )}
                 <button type="button" onClick={() => setShareOpen(true)} aria-label={m.app.share} title={m.app.share} className={toolBtn}>
                   <Share2 size={20} aria-hidden="true" />
                   <span className={toolLabel} aria-hidden="true">{m.app.share}</span>
@@ -363,9 +314,8 @@ function CVPage() {
           {/* A live region that is always there, so the note is announced when it appears. */}
           <div role="status">{beyondOpen && <BeyondNote onClose={() => setBeyondOpen(false)} />}</div>
         </header>
-        )}
 
-        {sharedCV && !embed && (
+        {sharedCV && (
           <div role="region" aria-label={bannerText} className="bg-ink text-paper">
             <div className="mx-auto flex max-w-4xl flex-col justify-between gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-6">
               <p className="flex items-center gap-2 text-sm">
@@ -384,7 +334,7 @@ function CVPage() {
           </div>
         )}
 
-        {!sharedCV && !publicId && checkOpen && (
+        {!sharedCV && checkOpen && (
           <aside aria-label={m.atsCard.title} className="mx-auto max-w-5xl px-3 pt-6 sm:px-6 md:pt-8">
             <AtsSummary cv={cv} targetTitle={targetTitle} onOpen={openSection} fullOpen={fullCheck} onToggleFull={() => setFullCheck((on) => !on)} />
             {fullCheck && (
@@ -405,27 +355,6 @@ function CVPage() {
           </aside>
         )}
 
-        {remote !== 'idle' ? (
-          <main id="main" tabIndex={-1} className="mx-auto max-w-4xl px-4 py-24 focus:outline-none sm:px-6" aria-busy={remote === 'loading'}>
-            {remote === 'loading' ? (
-              <p className="flex items-center gap-2 text-ink-soft" role="status">
-                <Loader2 size={20} aria-hidden="true" className="animate-spin motion-reduce:animate-none" />
-                {m.shared.loading}
-              </p>
-            ) : (
-              <div className="max-w-[40ch]">
-                <Lock size={20} aria-hidden="true" />
-                <h1 className="mt-6 font-title text-4xl md:text-5xl">{m.shared.missingTitle}</h1>
-                <p className="mt-4 font-body text-lg text-ink-soft">{m.shared.missingBody}</p>
-                {!embed && (
-                  <a href="../" className="mt-8 inline-flex h-11 items-center gap-2 rounded-sm bg-ink px-4 text-[14px] font-medium text-paper hover:opacity-90">
-                    {m.shared.createOwn}
-                  </a>
-                )}
-              </div>
-            )}
-          </main>
-        ) : (
         <main
           id="main"
           tabIndex={-1}
@@ -589,15 +518,7 @@ function CVPage() {
           )}
           </div>
         </main>
-        )}
 
-        {embed ? (
-          <p className="mx-auto max-w-4xl px-4 pb-6 text-[12px] text-ink-soft sm:px-6">
-            <a href={publicCVUrl(publicId!)} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-ink">
-              {m.shared.madeWith}
-            </a>
-          </p>
-        ) : (
         <footer className="border-t border-ink">
           <div className="mx-auto flex max-w-4xl flex-col justify-between gap-4 px-4 py-10 text-sm text-ink-soft sm:flex-row sm:items-center sm:px-6">
             <Wordmark href="../" />
@@ -607,47 +528,10 @@ function CVPage() {
             )}
           </div>
         </footer>
-        )}
       </div>
 
-      {sharedCV ? (
-        <ShareDialog open={shareOpen} onOpenChange={setShareOpen} cv={cv} kind="viewing" url={window.location.href} />
-      ) : (
-        <ShareDialog
-          open={shareOpen}
-          onOpenChange={setShareOpen}
-          cv={cv}
-          kind="own"
-          isPublic={publishing.isPublic}
-          publicId={publicMeta.publicId}
-          listed={Boolean(publicMeta.listed)}
-          status={publishing.status}
-          busy={publishing.busy}
-          onMakePublic={() => {
-            setShareOpen(false);
-            setPublishOpen(true);
-          }}
-          onSetListed={async (listed) => {
-            if (!(await publishing.setListed(listed))) toast.error(m.publish.failed);
-          }}
-        />
-      )}
-      {!sharedCV && (
-        <DeleteCVDialog open={deleteOpen} onOpenChange={setDeleteOpen} name={ownCV.profile.name} isPublic={publishing.isPublic} onDelete={deleteOwn} />
-      )}
-      <PublishDialog
-        open={publishOpen}
-        onOpenChange={setPublishOpen}
-        busy={publishing.busy}
-        onConfirm={async (listed) => {
-          const ok = await publishing.makePublic(listed);
-          if (ok) {
-            toast.success(m.publish.nowPublic);
-            setShareOpen(true);
-          }
-          return ok;
-        }}
-      />
+      <ShareDialog open={shareOpen} onOpenChange={setShareOpen} cv={cv} own={!sharedCV} />
+      {!sharedCV && <DeleteCVDialog open={deleteOpen} onOpenChange={setDeleteOpen} name={ownCV.profile.name} onDelete={deleteOwn} />}
       <CVEditor
         open={editing && !sharedCV}
         onOpenChange={setEditing}

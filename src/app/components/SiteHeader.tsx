@@ -4,10 +4,10 @@ import { ReadingControls } from './ReadingControls';
 import { Wordmark } from './Wordmark';
 import { useI18n } from '../i18n';
 
-/** Header for the homepage and the example CVs page. `root` is the relative path to the site root.
+/** Header for the homepage, Why, About and the example CVs page. `root` is the relative path to the site root.
  *  Below md the links sit behind a Menu button, so "Open my CV" is always one tap away; below sm the
  *  reading controls move into that panel too, since the wordmark keeps its full width. */
-export function SiteHeader({ root, current }: { root: string; current?: 'home' | 'people' | 'why' }) {
+export function SiteHeader({ root, current }: { root: string; current?: 'home' | 'people' | 'why' | 'about' }) {
   const { m } = useI18n();
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -20,6 +20,7 @@ export function SiteHeader({ root, current }: { root: string; current?: 'home' |
 
   const links = [
     { href: `${root}why/`, label: m.why.nav, page: 'why' },
+    { href: `${root}about/`, label: m.about.nav, page: 'about' },
     { href: `${root}people/`, label: m.directory.nav, page: 'people' },
   ] as const;
 

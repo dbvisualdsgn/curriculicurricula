@@ -2,10 +2,18 @@
 
 ## Unreleased
 
+### Share with one link
+- Public and Private are gone, and so is the Public CVs page. Your CV stays in your browser.
+- Share makes one link that carries your CV inside it. Nothing is stored online.
+- The link shows your CV as it is now. Changed it? Share a new link.
+- The examples page is now called Example CVs.
+
+### More examples, and an About page
+- 34 example CVs, from first jobs to senior roles: waiter, delivery rider, student, care assistant, bus driver, head chef, CTO and more.
+- Filter the examples by level: first job, experienced, or senior and lead.
+- A new About page says who made the site. The Why page keeps to the idea.
+
 ### Clearer, and honest when something goes wrong
-- Deleting a public CV now says its link will stop working. Before, it said the opposite.
-- If the Public CVs page can’t load, it says so. It no longer looks empty.
-- A report that doesn’t send says so, instead of thanking you.
 - Error messages are easier to read: dark text with a small red dot.
 
 ### The CV menu

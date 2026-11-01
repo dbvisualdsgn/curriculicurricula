@@ -1,6 +1,6 @@
-// The compact CV payload (deflate + base64url, built-in logos as tokens). It is embedded in our PDFs, and
-// older share links carried it in the URL fragment (#cv=…): those links are still read, but no longer made.
-// New links point to the public CV server instead (see backend.ts).
+// The compact CV payload (deflate + base64url, built-in logos as tokens). It is embedded in our PDFs, and share
+// links carry it in the URL fragment (#cv=…). The fragment never reaches a server: the CV travels inside the link
+// itself and nothing is stored online.
 import { tokenizeLogos } from './logos';
 import { normalize } from './useCV';
 import type { CVData } from './types';
@@ -47,6 +47,12 @@ export async function readSharedCV(hash: string): Promise<CVData | null> {
   const payload = params.get(PARAM);
   if (!payload) return null;
   return unpackCV(payload);
+}
+
+/** A link that opens this CV, read-only, in the app. The link holds the CV as it is now: later edits need a new link. */
+export async function shareLink(cv: CVData) {
+  const base = `${window.location.origin}${window.location.pathname.replace(/(people\/|app\/)?(index\.html)?$/, '')}app/`;
+  return `${base}#${PARAM}=${await packCV(cv)}`;
 }
 
 export function clearShareHash() {

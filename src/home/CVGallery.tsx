@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { Pause, Play } from 'lucide-react';
 import { CVCard } from '../app/components/CVCard';
-import { people, type Person } from '../app/cv/people';
+import { levels, people, type Person } from '../app/cv/people';
+
+/** First jobs, experienced and senior CVs taken in turn, so every stretch of the gallery shows a mix. */
+const mixed: Person[] = (() => {
+  const byLevel = levels.map((l) => people.filter((p) => p.level === l));
+  const out: Person[] = [];
+  for (let i = 0; out.length < people.length; i++) byLevel.forEach((list) => list[i] && out.push(list[i]));
+  return out;
+})();
 import { useI18n } from '../app/i18n';
 
 /** A row that drifts sideways forever. The list is drawn twice so the loop has no seam;
@@ -14,7 +22,8 @@ function Row({ items, reverse, paused }: { items: Person[]; reverse?: boolean; p
       // Once the row stops for keyboard focus, bring the focused card into view.
       onFocus={(e) => requestAnimationFrame(() => e.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }))}
     >
-      <div className={`gallery-track flex w-max gap-4 ${reverse ? 'gallery-reverse' : ''}`}>
+      {/* About 10s per card, so the drift keeps the same calm speed however many examples there are. */}
+      <div className={`gallery-track flex w-max gap-4 ${reverse ? 'gallery-reverse' : ''}`} style={{ animationDuration: `${items.length * 10}s` }}>
         <ul className="flex gap-4">
           {items.map((p) => <li key={p.id} className="w-[19rem] shrink-0 sm:w-[21rem]"><CVCard person={p} root="./" /></li>)}
         </ul>
@@ -30,7 +39,6 @@ function Row({ items, reverse, paused }: { items: Person[]; reverse?: boolean; p
 export function CVGallery() {
   const { m } = useI18n();
   const [paused, setPaused] = useState(false);
-  const half = Math.ceil(people.length / 2);
   return (
     <div className="space-y-4">
       <div className="mx-auto flex max-w-6xl xl:max-w-none xl:px-12 justify-end px-4 sm:px-8">
@@ -44,8 +52,8 @@ export function CVGallery() {
           {paused ? m.gallery.play : m.gallery.pause}
         </button>
       </div>
-      <Row items={people.slice(0, half)} paused={paused} />
-      <Row items={people.slice(half)} reverse paused={paused} />
+      <Row items={mixed.filter((_, i) => i % 2 === 0)} paused={paused} />
+      <Row items={mixed.filter((_, i) => i % 2 === 1)} reverse paused={paused} />
     </div>
   );
 }
