@@ -14,20 +14,31 @@ gets smaller (15px, 17px from `sm`), never hidden. The favicon is the letters "c
 
 | Token | Default | Use |
 |---|---|---|
-| `--paper` | `#ECEAE5` | Page background (e-ink paper), set by the Light panel |
+| `--paper` | `#ECEAE5` | Page background (e-ink paper), set by the Appearance panel |
 | `--ink` | `#111111` | Text, rules that open a section, primary buttons |
 | `--ink-soft` | computed | Secondary text, always ≥ 7:1 on the current paper (AAA) |
 | `--rule` | computed | Hairlines between entries, field borders |
 | `--focus` | ink | 2px focus outline, offset 2px |
 | `--highlight` / `--signal` / `--go` | `#E6F05A` / `#E5482A` / `#2F8F5B` | Highlighter, error dot, passed check; text on them stays ink |
 
-### Light (instead of dark mode)
+### Appearance (instead of dark mode)
 
-There is no dark theme: a CV is a page to read and print. Like a Kobo, the **Light** panel (`PaperControls`,
-`src/app/paper.ts`) has two sliders. **Warmth** moves the paper from cool white `#F5F6F3` through `#ECEAE5` to
-warm `#ECDDBF`; **Brightness** dims it down to 80%. Ink stays `#111`, and the secondary greys are recomputed
-for every setting, so all 441 combinations keep text contrast ≥ 7.2:1 (WCAG AAA). The choice is saved, applied
-before first paint by an inline script, and used as the paper colour of the "As on the page" PDF.
+There is no dark theme: a CV is a page to read and print. The **Appearance** panel (`PaperControls`,
+`src/app/paper.ts`, in the CV menu and the site header) has three looks, for the whole page in this browser:
+
+- **Classic:** white paper, ink `#111`, photos in colour.
+- **Paper** (default): like a Kobo, two sliders. **Warmth** moves the paper from cool white `#F5F6F3` through
+  `#ECEAE5` to warm `#ECDDBF`; **Brightness** dims it down to 80%. Ink stays `#111`; photos are grey, multiplied
+  onto the paper.
+- **Color:** a background tone and a text tone (hue slider or HEX, plus six presets). In OKLCH, the background is
+  fixed at L 0.94 with low chroma, so only its tone changes; the text keeps its tone with strong chroma and is
+  darkened until it reaches 9:1 on the background, so light zones are cut off. Photos become a duotone (shadows in
+  the ink, lights in the paper; SVG filter `#cc-duotone`). The highlight takes the ink's tone at the highest chroma
+  that keeps the ink on top at ≥ 4.5:1 (it only sits behind titles and short labels).
+
+Secondary text and greys are recomputed from the paper and the ink in every look, so text contrast stays ≥ 7:1
+(WCAG AAA); `paper.test.ts` checks every tone. The choice is saved, applied before first paint by an inline script
+(colours and `data-photo`), and used for the paper, ink and photo of the "As on the page" PDF.
 
 Tailwind's `zinc-*` and `white` are remapped onto this warm neutral scale, and every `shadow-*` is
 flat. Brand logos inside a CV are the only colour on screen (they belong to the CV, not the brand).
@@ -67,7 +78,7 @@ PDF embeds the same title and text fonts.
 
 - **Section opener:** 1px ink rule and a mono title (`SectionHead`). No running numbers on the CV.
 - **CV sheet:** the CV sits on one sheet with a hairline edge and a soft shadow. The sheet has no fill of its
-  own: it is the `paper` the person chose in Light, so each CV looks like its own setting, not one fixed white. Print drops the sheet. Next to the name, on the left, the person picks nothing,
+  own: it is the `paper` of the chosen Appearance, so each CV looks like its own setting, not one fixed white. Print drops the sheet. Next to the name, on the left, the person picks nothing,
   their initials (a black square) or a photo (square, no rounding, grayscale, 480px). The PDF follows the same choice.
 - **CV page bars:** row 1 is the site (wordmark, My CVs, language, Example CVs). Row 2 is the CV menu, in two
   blocks: one bordered edit block (Edit CV, Recruiter check, Fonts, Background, Delete), each an icon with a name,

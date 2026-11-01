@@ -9,7 +9,7 @@ import { fmt, useI18n } from '../app/i18n';
 
 const label = 'whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
 const pill = (on: boolean) =>
-  `group inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-ink px-3.5 py-1.5 text-[14px] sm:min-h-0 ${on ? 'bg-highlight font-body italic text-[#111]' : 'hover:bg-zinc-100'}`;
+  `group inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-ink px-3.5 py-1.5 text-[14px] sm:min-h-0 ${on ? 'bg-highlight font-body italic text-ink' : 'hover:bg-zinc-100'}`;
 
 /** One row of filter pills: All, then each value. Pressing the active value again clears it. */
 function Pills<T extends string>({ title, all, values, labelOf, active, onChange }: {

@@ -30,6 +30,9 @@ the PDFs in `src/app/cv/__fixtures__`. Check the result in the editor; scanned P
 **Share:** a CV stays in the browser. **Share** makes a link that carries the whole CV inside it (`src/app/cv/share.ts`),
 so nothing is stored online.
 
+**Appearance:** Classic (white, photos in colour), Paper (e-reader light) or Color (any light background tone and
+dark text tone, clamped so text stays at AAA; photos as a duotone). One setting per browser (`src/app/paper.ts`).
+
 **Downloads:** "As on the page" builds a PDF with the same layout, embedded fonts (`public/fonts`: Switzer and Gambetta by the Indian Type Foundry via Fontshare, IBM Plex Mono under the SIL OFL), logos and
 photo. "ATS plain" builds the one-column, text-only version for job portals.
 

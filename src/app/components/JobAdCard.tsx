@@ -128,7 +128,7 @@ export function JobAdCard({ cv, open, onOpen, onAddSkill, onSetHeadline, focusRe
                           }}
                           aria-label={fmt(m.atsCard.addKeyword, { k })}
                           title={fmt(m.atsCard.addKeyword, { k })}
-                          className="group inline-flex min-h-9 items-center gap-1 rounded-full border border-ink px-2.5 py-1 text-[13px] text-ink hover:bg-highlight hover:text-[#111]"
+                          className="group inline-flex min-h-9 items-center gap-1 rounded-full border border-ink px-2.5 py-1 text-[13px] text-ink hover:bg-highlight hover:text-ink"
                         >
                           {k}
                           <Plus size={20} aria-hidden="true" className="transition-transform group-hover:rotate-90 motion-reduce:transition-none" />
@@ -143,7 +143,7 @@ export function JobAdCard({ cv, open, onOpen, onAddSkill, onSetHeadline, focusRe
                   <h3 className="sr-only">{m.ats.matchedKeywords}</h3>
                   <ul className="flex flex-wrap gap-1.5">
                     {match.matched.map((k) => (
-                      <li key={k} className="inline-flex items-center gap-1 rounded-full border border-ink bg-highlight px-2.5 py-1 font-body text-[13px] italic text-[#111]">
+                      <li key={k} className="inline-flex items-center gap-1 rounded-full border border-ink bg-highlight px-2.5 py-1 font-body text-[13px] italic text-ink">
                         {k}
                         <Check size={20} aria-hidden="true" />
                       </li>

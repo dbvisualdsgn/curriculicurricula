@@ -75,7 +75,7 @@ function FlowDiagram({ mode }: { mode: Mode }) {
           <div key={text} className="relative flex flex-col items-center text-center">
             <span
               className={`flex h-14 w-14 items-center justify-center rounded-sm border ${
-                mark ? 'border-ink bg-highlight text-[#111]' : off ? 'border-dashed border-ink-soft bg-paper text-ink-soft' : 'border-ink bg-paper'
+                mark ? 'border-ink bg-highlight text-ink' : off ? 'border-dashed border-ink-soft bg-paper text-ink-soft' : 'border-ink bg-paper'
               }`}
             >
               <Icon size={20} />

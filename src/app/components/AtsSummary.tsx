@@ -63,7 +63,7 @@ export function AtsSummary({ cv, targetTitle, onOpen, fullOpen, onToggleFull }: 
                 <button
                   type="button"
                   onClick={() => onOpen(f.section)}
-                  className="group inline-flex max-w-full items-start gap-2 rounded-full border border-ink px-3.5 py-1.5 text-left font-sans text-[13px] leading-snug hover:bg-highlight hover:text-[#111]"
+                  className="group inline-flex max-w-full items-start gap-2 rounded-full border border-ink px-3.5 py-1.5 text-left font-sans text-[13px] leading-snug hover:bg-highlight hover:text-ink"
                 >
                   {f.severity === 'error' && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-signal" aria-hidden="true" />}
                   <span className="sr-only">{m.ats.severity[f.severity]}: </span>

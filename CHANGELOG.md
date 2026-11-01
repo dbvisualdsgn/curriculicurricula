@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Appearance
+- The Background button is now Appearance, in the CV menu and the site menu: Classic, Paper or Color.
+- Classic is white paper, black text and photos in colour. Paper is the e-reader look, as before.
+- Color lets you pick any tone for the background and the text, or start from six presets. The background stays light and the text stays dark, so it always reads well. Photos and highlights take the colours too.
+- New photos are kept in colour; the page shows them grey, in colour or in two colours. Photos added before stay grey.
+- The "As on the page" PDF follows the appearance.
+
 ### A clearer CV menu
 - Every tool for your CV sits in one block: Edit, Recruiter check, Fonts, Background and Delete, each with a name.
 - Delete asks before it removes anything. Share and Download stay on the right.
