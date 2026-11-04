@@ -1,8 +1,8 @@
-// Builds the Why-page press: an isometric bench machine, drawn with the Anatomy kit (MIT, ./iso-kit.mjs) in the
+// Builds the homepage press: an isometric bench machine, drawn with the Anatomy kit (MIT, ./iso-kit.mjs) in the
 // style of the documents above it. A blank sheet leaves the feed tray, the press head comes down and prints the
 // same standard CV, the belt carries it to the end, and it drops into the open catalogue on its lift. Behind it
-// stand the finished catalogues. Writes src/why/pressFigure.ts: the static SVG.
-// The motion is CSS (src/why/press.css): the sheet is drawn where it ends (on the catalogue pile), which is what
+// stand the finished catalogues. Writes src/home/press/pressFigure.ts: the static SVG.
+// The motion is CSS (src/home/press/press.css): the sheet is drawn where it ends (on the catalogue pile), which is what
 // reduced motion shows, and the CSS moves it in from offsets written here as custom properties.
 // Run: node scripts/desk-hero/press.mjs [--page=<file>]
 import { writeFileSync } from "node:fs";
@@ -12,7 +12,7 @@ import * as k from "./iso-kit.mjs";
 import * as G from "./lathe.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const OUT = join(HERE, "../../src/why/pressFigure.ts");
+const OUT = join(HERE, "../../src/home/press/pressFigure.ts");
 
 const WIDTH = 760;
 

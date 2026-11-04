@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { useReveal } from '../app/hooks/useReveal';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useReveal } from '../../app/hooks/useReveal';
+import { useI18n } from '../../app/i18n';
 import { PRESS_SVG } from './pressFigure';
 import './press.css';
 
@@ -17,17 +18,19 @@ const PEOPLE = [
 const FIRST_COUNT = 1247;
 
 /**
- * The press: one sheet every 6s, the same CV layout with a new name, into the open catalogue.
- * Decorative (the heading says what it shows). Each loop the page writes the next name and the counter.
+ * The homepage press: one sheet every 6s, the same CV layout with a new name, into the open catalogue.
+ * Each loop the page writes the next name and the counter. A click (or Enter/Space) pauses it and starts it again.
  */
-export function Press({ paused }: { paused: boolean }) {
-  const ref = useReveal<HTMLDivElement>(0.25);
+export function Press() {
+  const { m } = useI18n();
+  const ref = useReveal<HTMLDivElement>(0.2);
   const turn = useRef(0);
+  const still = useMemo(() => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches, []);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    const root = ref.current;
-    const svg = root?.querySelector('svg');
-    if (!root || !svg) return;
+    const svg = ref.current?.querySelector('svg');
+    if (!svg) return;
     const name = svg.querySelector('[data-part="name"]');
     const role = svg.querySelector('[data-part="role"]');
     const count = svg.querySelector('[data-part="count"]');
@@ -47,13 +50,24 @@ export function Press({ paused }: { paused: boolean }) {
     return () => sheet?.removeEventListener('animationiteration', next);
   }, [ref]);
 
+  const toggle = () => !still && setPaused((p) => !p);
   return (
     <div
       ref={ref}
-      aria-hidden="true"
       data-paused={paused || undefined}
-      className="press press-art iso iso-site mx-auto w-full max-w-[64rem]"
+      className={`press press-art iso iso-site mx-auto w-full max-w-[58rem] ${still ? '' : 'cursor-pointer'} focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)]`}
       data-theme="light"
+      role={still ? 'img' : 'button'}
+      tabIndex={still ? undefined : 0}
+      aria-pressed={still ? undefined : paused}
+      aria-label={`${m.homeX.pressLabel}${still ? '' : ` ${paused ? m.homeX.heroPlay : m.homeX.heroPause}`}`}
+      onClick={toggle}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      }}
       dangerouslySetInnerHTML={{ __html: PRESS_SVG }}
     />
   );
