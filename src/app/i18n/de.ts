@@ -189,7 +189,6 @@ export const de: Messages = {
   home: {
     openCV: 'Meinen Lebenslauf öffnen',
     kicker: 'Ein Werkzeug für den Lebenslauf. Mehr nicht.',
-    sub: 'Importieren → Bearbeiten → Bewerben. Ohne Konto, nichts online gespeichert.',
     start: 'Losschreiben',
     example: 'Beispiele ansehen',
     howTitle: 'So funktioniert’s',

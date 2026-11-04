@@ -178,14 +178,12 @@ export function Home() {
 
       <main id="main" tabIndex={-1} className="focus:outline-none">
         {/* Opening */}
-        {/* The press first, then the title, the line and the buttons, centred under it. */}
+        {/* The title and the buttons, centred, then the press under them. */}
         <section className="mx-auto max-w-6xl xl:max-w-none xl:px-12 px-4 pb-20 pt-10 sm:px-8 md:pb-28 md:pt-14">
-          <Press />
-          <div ref={heroRef} className="reveal mx-auto mt-10 flex max-w-4xl flex-col items-center text-center md:mt-12">
+          <div ref={heroRef} className="reveal mx-auto flex max-w-4xl flex-col items-center text-center">
             <h1 className="font-title text-[clamp(2.25rem,10vw,3.75rem)] md:text-[clamp(3rem,6vw,6.75rem)] hyphens-auto md:hyphens-manual [overflow-wrap:break-word] font-normal leading-[0.95]">
               {m.homeX.claimA} <span className="hl">{m.homeX.claimB}</span>
             </h1>
-            <p className="mt-6 max-w-[34ch] font-body text-xl leading-snug text-ink-soft md:text-2xl">{h.sub}</p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               <a href={`${APP}?new=1`} className={primaryBtn}>
                 {h.start}
@@ -196,6 +194,9 @@ export function Home() {
                 <ArrowUpRight size={20} aria-hidden="true" />
               </a>
             </div>
+          </div>
+          <div className="mt-10 md:mt-14">
+            <Press />
           </div>
         </section>
 

@@ -189,7 +189,6 @@ export const fr: Messages = {
   home: {
     openCV: 'Ouvrir mon CV',
     kicker: 'Un outil pour le CV. Rien de plus.',
-    sub: 'Importez → Modifiez → Postulez. Sans compte, rien n’est stocké en ligne.',
     start: 'Commencer à écrire',
     example: 'Voir des exemples',
     howTitle: 'Comment ça marche',
