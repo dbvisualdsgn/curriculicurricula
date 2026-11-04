@@ -210,7 +210,7 @@ export const de: Messages = {
     a3: 'Ja, komplett.',
     closing: 'Alle haben einen.',
     closingCta: 'Deinen erstellen',
-    footer: 'Gemacht zum Lesen, nicht zum Scrollen.',
+    footer: 'Der Lebenslauf ist ein Dokument. Für alle.',
     source: 'Code auf GitHub',
     chapter: 'Kapitel',
     q4: 'Was macht es nicht?',

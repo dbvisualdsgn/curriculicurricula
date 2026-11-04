@@ -210,7 +210,7 @@ export const pt: Messages = {
     a3: 'Sim, totalmente.',
     closing: 'Cada um tem o seu.',
     closingCta: 'Cria o teu',
-    footer: 'Feito para ler, não para fazer scroll.',
+    footer: 'O CV é um documento. Para todos.',
     source: 'Código no GitHub',
     chapter: 'Capítulo',
     q4: 'O que é que não faz?',

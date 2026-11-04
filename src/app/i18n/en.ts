@@ -209,7 +209,7 @@ export const en = {
     a3: 'Yes, completely.',
     closing: 'Everyone has one.',
     closingCta: 'Make yours',
-    footer: 'Made for reading, not scrolling.',
+    footer: 'Your CV is a document. For everyone.',
     source: 'Source on GitHub',
     chapter: 'Chapter',
     q4: 'What doesn’t it do?',

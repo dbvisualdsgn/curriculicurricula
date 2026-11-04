@@ -210,7 +210,7 @@ export const nl: Messages = {
     a3: 'Ja, helemaal.',
     closing: 'Iedereen heeft er een.',
     closingCta: 'Maak de jouwe',
-    footer: 'Gemaakt om te lezen, niet om te scrollen.',
+    footer: 'Een cv is een document. Voor iedereen.',
     source: 'Code op GitHub',
     chapter: 'Hoofdstuk',
     q4: 'Wat doet het niet?',

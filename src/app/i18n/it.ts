@@ -210,7 +210,7 @@ export const it: Messages = {
     a3: 'Sì, del tutto.',
     closing: 'Ognuno ha il suo.',
     closingCta: 'Crea il tuo',
-    footer: 'Fatto per leggere, non per scrollare.',
+    footer: 'Il CV è un documento. Per tutti.',
     source: 'Codice su GitHub',
     chapter: 'Capitolo',
     q4: 'Cosa non fa?',
