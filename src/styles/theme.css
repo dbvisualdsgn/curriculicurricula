@@ -290,26 +290,6 @@
   background-size: 100% 100%;
 }
 
-/* A question crossed out by a pen stroke, one after the other (--d sets each one's delay). */
-.strike > span {
-  position: relative;
-}
-.strike > span::after {
-  content: '';
-  position: absolute;
-  left: -0.15em;
-  right: -0.15em;
-  top: 55%;
-  height: 1.5px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms);
-}
-.reveal.is-in .strike > span::after {
-  transform: scaleX(1);
-}
-
 /* Sections rise in once, gently. */
 .reveal {
   opacity: 0;
@@ -432,7 +412,6 @@
   .nudge-up:hover svg, .nudge-up:focus-visible svg { transform: none; }
   .reveal { opacity: 1; transform: none; }
   .reveal .hl, .hl-draw { background-size: 100% 100%; }
-  .strike > span::after { transition: none !important; transform: scaleX(1); }
   .bar-grow { transform: none; }
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 import { Accessibility, Github, Languages, Link2, Lock, Pause, Play, Smartphone, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
 import { useReveal } from '../app/hooks/useReveal';
@@ -6,7 +6,7 @@ import { useI18n } from '../app/i18n';
 import { Documents } from './Documents';
 import { Press } from './Press';
 import { SiteFooter } from '../app/components/SiteFooter';
-import { Closing, Part, WithName, body, label, wrap } from './parts';
+import { Closing, Part, body, label, wrap } from './parts';
 
 const reducedMotion = () => Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
 
@@ -22,7 +22,6 @@ export function Why() {
     document.title = `${w.nav} · ${m.app.name}`;
   }, [w.nav, m.app.name]);
 
-  const asks = [w.ask1, w.ask2, w.ask3, w.ask4, w.ask5, w.ask6];
   const does = [
     [w.does1t, w.does1],
     [w.does2t, w.does2],
@@ -54,30 +53,6 @@ export function Why() {
             <h1 className="max-w-[22ch] font-title text-[clamp(2.25rem,8vw,3.75rem)] font-normal leading-[0.95] hyphens-auto [overflow-wrap:break-word] md:text-[clamp(3rem,5.6vw,6.25rem)] md:hyphens-manual">
               {w.title}
             </h1>
-            {/* The freestyle part: the questions everyone answers alone, crossed out one by one. */}
-            <div className="mt-14 grid gap-12 md:mt-20 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-end md:gap-16">
-              <div>
-                <p className={label}>{w.asksLabel}</p>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {asks.map((a, i) => (
-                    <li
-                      key={a}
-                      className="strike rounded-full border border-rule px-4 py-2 font-body text-lg leading-snug text-ink-soft md:text-xl"
-                      style={{ '--d': `${500 + i * 160}ms` } as CSSProperties}
-                    >
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="font-title text-2xl leading-tight md:text-4xl">
-                  <span className="hl" style={{ transitionDelay: '1500ms' }}>
-                    <WithName text={w.idea3} />
-                  </span>
-                </p>
-              </div>
-            </div>
           </div>
         </section>
 
