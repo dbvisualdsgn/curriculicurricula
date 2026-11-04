@@ -189,7 +189,6 @@ export const es: Messages = {
   home: {
     openCV: 'Abrir mi CV',
     kicker: 'Una herramienta para tu CV. Nada más.',
-    sub: 'Importa → Edita → Candidátate. Sin cuenta, nada se guarda en línea.',
     start: 'Empezar a escribir',
     example: 'Ver ejemplos',
     howTitle: 'Cómo funciona',

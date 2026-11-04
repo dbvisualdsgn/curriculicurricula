@@ -188,7 +188,6 @@ export const en = {
   home: {
     openCV: 'Open my CV',
     kicker: 'A CV tool. Nothing more.',
-    sub: 'Import → Edit → Apply. No account, nothing stored online.',
     start: 'Start writing',
     example: 'See examples',
     howTitle: 'How it works',

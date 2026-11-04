@@ -189,7 +189,6 @@ export const nl: Messages = {
   home: {
     openCV: 'Mijn cv openen',
     kicker: 'Een cv-tool. Meer niet.',
-    sub: 'Importeer → Bewerk → Solliciteer. Geen account, niets online opgeslagen.',
     start: 'Begin met schrijven',
     example: 'Bekijk voorbeelden',
     howTitle: 'Zo werkt het',
