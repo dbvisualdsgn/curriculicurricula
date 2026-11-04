@@ -5,7 +5,7 @@ import { SiteFooter } from '../app/components/SiteFooter';
 import { useI18n } from '../app/i18n';
 import { useReveal } from '../app/hooks/useReveal';
 import { CVGallery } from './CVGallery';
-import { DeskHero } from './desk/DeskHero';
+import { Press } from './press/Press';
 
 const APP = 'app/';
 const label = 'font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
@@ -178,13 +178,15 @@ export function Home() {
 
       <main id="main" tabIndex={-1} className="focus:outline-none">
         {/* Opening */}
-        <section className="mx-auto grid max-w-6xl xl:max-w-none xl:px-12 gap-14 px-4 pb-20 pt-14 sm:px-8 md:grid-cols-[minmax(0,11fr)_minmax(0,13fr)] md:items-center md:pb-28 md:pt-24">
-          <div ref={heroRef} className="reveal">
+        {/* The press first, then the title, the line and the buttons, centred under it. */}
+        <section className="mx-auto max-w-6xl xl:max-w-none xl:px-12 px-4 pb-20 pt-10 sm:px-8 md:pb-28 md:pt-14">
+          <Press />
+          <div ref={heroRef} className="reveal mx-auto mt-10 flex max-w-4xl flex-col items-center text-center md:mt-12">
             <h1 className="font-title text-[clamp(2.25rem,10vw,3.75rem)] md:text-[clamp(3rem,6vw,6.75rem)] hyphens-auto md:hyphens-manual [overflow-wrap:break-word] font-normal leading-[0.95]">
               {m.homeX.claimA} <span className="hl">{m.homeX.claimB}</span>
             </h1>
-            <p className="mt-8 max-w-[34ch] font-body text-xl leading-snug text-ink-soft md:text-2xl">{h.sub}</p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <p className="mt-6 max-w-[34ch] font-body text-xl leading-snug text-ink-soft md:text-2xl">{h.sub}</p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               <a href={`${APP}?new=1`} className={primaryBtn}>
                 {h.start}
                 <ArrowRight size={20} aria-hidden="true" />
@@ -195,7 +197,6 @@ export function Home() {
               </a>
             </div>
           </div>
-          <DeskHero />
         </section>
 
         <Chapter id="how" title={h.howTitle} n={1}>
