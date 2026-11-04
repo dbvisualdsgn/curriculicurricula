@@ -140,3 +140,29 @@ describe('heading and role edge cases', () => {
     expect(cv.education.map((e) => [e.degree, e.school])).toEqual([['Doctorate in History', 'University of Oxford']]);
   });
 });
+
+// Designed two-column CV: name, headline and contact centred across both columns; an untitled introduction
+// at the top of the left column; "My fav tools at work 🛝" over a list; roles as title, "Company | City",
+// "2022 | present" or "freelance"; certificates as title, description, school.
+it('two columns under a centred header', async () => {
+  const cv = await read('two-col-centred-header');
+  expect(cv.profile.name).toBe('Marta Bianchi');
+  expect(cv.profile.headline).toBe('Product Designer');
+  expect(cv.profile.email).toBe('marta.bianchi@example.com');
+  expect(cv.profile.website).toBe('martabianchi.com');
+  expect(cv.profile.location).toBe('');
+  expect(cv.summary).toMatch(/^Hello! 👋 I'm Marta, curious about everything around interfaces and research\..*\(a payments platform\)\.$/);
+  expect(cv.tools.map((t) => t.name)).toEqual(['Figma', 'Sketch', 'Framer', 'AI tools', 'Jira', 'Notion', 'Miro', 'Mixpanel', 'Maze']);
+  expect(cv.experience.map((e) => [e.title, e.company, e.location, e.employmentType, e.start, e.end])).toEqual([
+    ['Senior Product Designer', 'Lumen', 'Berlin (Full Remote)', '', '2022', 'present'],
+    ['Product Designer', 'Orbit', 'Milan', '', '2019', '2022'],
+    ['Visual Designer', 'Studio Nove', 'Turin', 'freelance', '', ''],
+    ['Junior Designer', 'Kappa Agency', 'Rome', '', '2014', '2016'],
+  ]);
+  expect(cv.certifications.map((c) => [c.title, c.description, c.issuer])).toEqual([
+    ['Inclusive Design Basics', 'WCAG criteria and practical audits', 'Coursera'],
+    ['Service Design', 'Journeys, blueprints and workshops', 'Coursera'],
+    ['Visual Communication', '', 'Bauhaus School of Design'],
+    ['Fine Arts', '', 'University of Bologna'],
+  ]);
+});

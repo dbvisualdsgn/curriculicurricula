@@ -23,6 +23,8 @@ export interface PdfLine {
   text: string;
   size: number;
   page: number;
+  /** Which block of the page the line was read from (a column, or the lines above or below the columns). */
+  column?: number;
 }
 
 interface Item {
@@ -75,9 +77,10 @@ function rowsOf(items: Item[], page: number): PdfLine[] {
 const isDateOnly = (s: string) => /^[\p{L}.]*\s*(?:19|20)\d{2}\s*(?:[–—-]\s*[\p{L}.]*\s*(?:(?:19|20)\d{2})?[\p{L}’']*)?$/iu.test(s.trim());
 
 /**
- * Two-column CVs: finds an empty vertical gutter with real text on both sides and reads each column
- * top to bottom (the column with the topmost line first). Lines that cross the gutter stay in place
- * above or below the columns. A column of right-aligned dates is not a column.
+ * Two-column CVs: finds a vertical gutter with real text on both sides and reads each column
+ * top to bottom (the left one first when both start at the same height). A few lines may cross the
+ * gutter (a centred name, headline or contact line): they are read before the columns when they sit
+ * above them, after otherwise. A column of right-aligned dates is not a column.
  */
 function columnsOf(items: Item[]): Item[][] {
   if (items.length < 12) return [items];
@@ -87,28 +90,46 @@ function columnsOf(items: Item[]): Item[][] {
   const step = 2;
   const cover = new Array(Math.ceil(width / step) + 1).fill(0);
   for (const it of items) for (let x = it.x; x < it.x + it.w; x += step) cover[Math.floor((x - minX) / step)]++;
-  // Widest empty band whose middle sits between 15% and 85% of the text area.
-  let best = { from: 0, to: 0 };
-  let start = -1;
   const central = (from: number, to: number) => {
     const mid = ((from + to) / 2) * step;
     return mid > width * 0.15 && mid < width * 0.85;
   };
-  cover.forEach((c, i) => {
-    if (c === 0 && start < 0) start = i;
-    if ((c !== 0 || i === cover.length - 1) && start >= 0) {
-      if (i - start > best.to - best.from && central(start, i)) best = { from: start, to: i };
-      start = -1;
-    }
-  });
-  const gutter = minX + ((best.from + best.to) / 2) * step;
-  if ((best.to - best.from) * step < 12) return [items];
-  const left = items.filter((i) => i.x + i.w <= gutter);
-  const right = items.filter((i) => i.x >= gutter);
-  const real = (side: Item[]) => side.filter((i) => !isDateOnly(i.str)).length;
-  if (real(left) < 4 || real(right) < 4) return [items];
-  const top = (side: Item[]) => Math.max(...side.map((i) => i.y));
-  return top(left) >= top(right) ? [left, right] : [right, left];
+  // Widest band whose middle sits between 15% and 85% of the text area, crossed by at most `allowed` items.
+  const band = (allowed: number) => {
+    let best = { from: 0, to: 0 };
+    let start = -1;
+    cover.forEach((c, i) => {
+      if (c <= allowed && start < 0) start = i;
+      if ((c > allowed || i === cover.length - 1) && start >= 0) {
+        if (i - start > best.to - best.from && central(start, i)) best = { from: start, to: i };
+        start = -1;
+      }
+    });
+    return best;
+  };
+  // A clean gutter first; else one crossed only by a few lines (at most 8% of them).
+  for (const allowed of [0, Math.max(1, Math.floor(items.length * 0.08))]) {
+    const best = band(allowed);
+    if ((best.to - best.from) * step < 12) continue;
+    const gutter = minX + ((best.from + best.to) / 2) * step;
+    const left = items.filter((i) => i.x + i.w <= gutter);
+    const right = items.filter((i) => i.x >= gutter);
+    const across = items.filter((i) => i.x < gutter && i.x + i.w > gutter);
+    const real = (side: Item[]) => side.filter((i) => !isDateOnly(i.str)).length;
+    if (real(left) < 4 || real(right) < 4) continue;
+    const top = (side: Item[]) => Math.max(...side.map((i) => i.y));
+    // Lines may cross the gutter only above or below the columns: one crossing it between them
+    // (a long sentence) means there are no columns there.
+    const bottom = Math.max(Math.min(...left.map((i) => i.y)), Math.min(...right.map((i) => i.y)));
+    const colTopEarly = Math.min(top(left), top(right));
+    if (across.some((i) => i.y < colTopEarly && i.y > bottom)) continue;
+    const columns = top(left) >= top(right) - Math.max(...left.map((i) => i.size)) ? [left, right] : [right, left];
+    const colTop = Math.max(top(left), top(right));
+    const above = across.filter((i) => i.y > colTop);
+    const below = across.filter((i) => i.y <= colTop);
+    return [above, ...columns, below].filter((g) => g.length);
+  }
+  return [items];
 }
 
 /** Text lines in reading order, page by page and column by column. */
@@ -120,12 +141,16 @@ export async function readLines(doc: { numPages: number; getPage: (n: number) =>
     const items: Item[] = (content.items as { str: string; transform: number[]; width: number }[])
       .filter((i) => i.str && i.str.trim())
       .map((i) => ({ x: i.transform[4], y: i.transform[5], w: i.width ?? 0, size: Math.abs(i.transform[0]) || 10, str: i.str }));
-    for (const column of columnsOf(items)) lines.push(...rowsOf(column, n));
+    columnsOf(items).forEach((group, column) => lines.push(...rowsOf(group, n).map((l) => ({ ...l, column }))));
   }
-  // Drop our own running footer ("curriculi curricula 1 / 2") and page numbers ("2 / 3", "Page 2 of 3").
+  // Drop our own running footer ("curriculi curricula 1 / 2"), page numbers ("2 / 3", "Page 2 of 3"),
+  // and contact lines repeated as a footer.
+  const seen = new Set<string>();
   return lines.filter(
     (l) =>
       l.text &&
+      !(seen.has(l.text) && /@|https?:|www\.|\.com\b/i.test(l.text)) &&
+      seen.add(l.text) &&
       !/^curriculi\s*curricula\b/i.test(l.text) &&
       !/^\d+\s*\/\s*\d+$/.test(l.text) &&
       !/^(?:page|pagina|página|seite)\s+\d+\s+(?:of|di|sur|de|von|van)\s+\d+$/i.test(l.text),
@@ -139,7 +164,7 @@ const HEADINGS = {
   education: ['education', 'education & training', 'education and training', 'academic background', 'studies', 'istruzione', 'istruzione e formazione', 'formazione', 'titoli di studio', 'formation', 'formations', 'formation & diplômes', 'diplômes', 'éducation', 'études', 'educación', 'formación', 'formación académica', 'estudios', 'ausbildung', 'bildung', 'bildungsweg', 'studium', 'educação', 'formação', 'formação académica', 'formação acadêmica', 'opleiding', 'opleidingen'],
   skills: ['skills', 'core skills', 'key skills', 'technical skills', 'soft skills', 'hard skills', 'skills & expertise', 'expertise', 'competencies', 'competences', 'competenze', 'competenze chiave', 'competenze tecniche', 'competenze trasversali', 'abilità', 'compétences', 'compétences clés', 'savoir-faire', 'habilidades', 'competencias', 'aptitudes', 'kenntnisse', 'fähigkeiten', 'fertigkeiten', 'kompetenzen', 'kernkompetenzen', 'competências', 'vaardigheden', 'kernvaardigheden'],
   tools: ['tools', 'stack & tools', 'tools & software', 'tech stack', 'strumenti', 'software e strumenti', 'outils', 'logiciels', 'herramientas', 'ferramentas', 'werkzeuge', 'tools en software'],
-  certifications: ['certifications', 'certificates', 'licenses', 'licences', 'certificazioni', 'certificati', 'certificats', 'certificaciones', 'zertifikate', 'zertifizierungen', 'certificações', 'certificaten'],
+  certifications: ['certifications', 'certification', 'certificates', 'certificate', 'licenses', 'licences', 'certificazioni', 'certificati', 'certificats', 'certificaciones', 'zertifikate', 'zertifizierungen', 'certificações', 'certificaten'],
   languages: ['languages', 'language skills', 'lingue', 'lingue straniere', 'conoscenze linguistiche', 'langues', 'compétences linguistiques', 'idiomas', 'sprachen', 'sprachkenntnisse', 'línguas', 'talen', 'talenkennis'],
   // Contact blocks belong to the header; the rest is not part of this CV's sections and is left out.
   header: ['contact', 'contacts', 'contact details', 'contact info', 'personal details', 'contatti', 'contatto', 'dati personali', 'coordonnées', 'informations personnelles', 'contacto', 'datos personales', 'kontakt', 'persönliche daten', 'contato', 'contactos', 'dados pessoais', 'contactgegevens', 'persoonlijke gegevens'],
@@ -167,13 +192,19 @@ const KEYWORDS: [Bucket, RegExp][] = [
   ['other', /interest|hobb|referen|interess|intérêt|volunteer|volontariato|bénévolat|voluntariado|ehrenamt|vrijwilliger|award|publication/i],
 ];
 
-/** A short line set like a heading (capitals, bigger than the body text, or ending in ":") that names a section. */
-function looseHeadingOf(line: PdfLine, bodySize: number): Bucket | null {
-  const text = line.text.replace(/^\d{1,2}\s*[.)—–-]?\s*/, '').trim();
+/**
+ * A short line set like a heading (capitals, bigger than the body text, or ending in ":") that names a section.
+ * `listFollows`: the next line is a list ("Figma, Notion, Miro"), so a plain "My favourite tools" names it too.
+ */
+function looseHeadingOf(line: PdfLine, bodySize: number, listFollows = false): Bucket | null {
+  const text = line.text
+    .replace(/^\d{1,2}\s*[.)—–-]?\s*/, '')
+    .replace(/[\p{Extended_Pictographic}\u200d\ufe0f]/gu, '')
+    .trim();
   if (!text || text.length > 40 || text.split(/\s+/).length > 5 || /[\d@]|[.,;]$/.test(text)) return null;
   const letters = text.replace(/[^\p{L}]/gu, '');
   const styled = (letters.length > 2 && letters === letters.toUpperCase()) || line.size >= bodySize * 1.12 || text.endsWith(':');
-  if (!styled) return null;
+  if (!styled && !listFollows) return null;
   let best: { bucket: Bucket; at: number } | null = null;
   let keywordWords = 0;
   for (const [bucket, re] of KEYWORDS) {
@@ -185,14 +216,16 @@ function looseHeadingOf(line: PdfLine, bodySize: number): Bucket | null {
   // A heading is the section word plus at most one more ("Relevant Experience", "Skills & Tools");
   // "Senior Software Engineer" names a job, not a section.
   const extra = text.split(/\s+/).filter((w) => /\p{L}{3,}/u.test(w)).length - keywordWords;
-  return best && extra <= 1 ? best.bucket : null;
+  if (!best) return null;
+  if (extra <= 1) return best.bucket;
+  return listFollows && ['skills', 'tools', 'languages'].includes(best.bucket) ? best.bucket : null;
 }
 
 const PRESENT = "present|current|now|today|presente|attuale|oggi|aujourd'hui|aujourd’hui|actuel|actualidad|actual|heute|aktuell|atual|heden";
 // Month names (any length, as a whole word) in en, it, fr, es, de, pt, nl.
 const MONTH = String.raw`(?<!\p{L})(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|gen|mag|giu|lug|ago|set|ott|dic|janv|févr|fév|avr|mai|juin|juil|août|déc|ene|abr|jän|mär|okt|dez|fev|out|mrt|mei)\p{L}*\.?`;
 const DATE = String.raw`(?:${MONTH}\s+)?(?:19|20)\d{2}|\d{1,2}[/.](?:19|20)\d{2}`;
-const RANGE_RE = new RegExp(String.raw`(${DATE})\s*(?:[–—-]|to|a|à|bis|tot|al)\s*(${DATE}|(?:${PRESENT})(?![\p{L}]))`, 'iu');
+const RANGE_RE = new RegExp(String.raw`(${DATE})\s*(?:[–—|-]|to|a|à|bis|tot|al)\s*(${DATE}|(?:${PRESENT})(?![\p{L}]))`, 'iu');
 const SINGLE_YEAR_RE = /\b(19|20)\d{2}\b/;
 const BULLET_RE = /^[•\-–—*▪●◦]\s*/;
 const EMAIL_RE = /[^\s@|·]+@[^\s@|·]+\.[^\s@|·]+/;
@@ -291,12 +324,82 @@ function parseExperience(lines: string[]): Experience[] {
   return roles;
 }
 
+/**
+ * Roles whose titles are set bigger than the rest: each title opens a role, and the lines under it
+ * (company | place, dates, "freelance", bullets) fill it, in any order.
+ */
+function parseExperienceByTitles(lines: PdfLine[]): Experience[] {
+  if (lines.length < 4) return [];
+  const count = new Map<number, number>();
+  for (const l of lines) count.set(Math.round(l.size * 2) / 2, (count.get(Math.round(l.size * 2) / 2) ?? 0) + 1);
+  const body = [...count.entries()].sort((a, b) => b[1] - a[1])[0][0];
+  const isTitle = (l: PdfLine) => l.size >= body + 0.5 && !BULLET_RE.test(l.text) && !RANGE_RE.test(l.text) && l.text.length <= 80;
+  const titles = lines.filter(isTitle);
+  // All titles in one size: two bigger sizes mean company and role (LinkedIn), read by layout instead.
+  if (titles.length < 2 || new Set(titles.map((l) => Math.round(l.size * 2))).size > 1) return [];
+  const roles: Experience[] = [];
+  let current: Experience | null = null;
+  let metaDone = false;
+  for (const l of lines) {
+    if (isTitle(l)) {
+      current = { id: newId(), title: l.text, company: '', location: '', employmentType: '', start: '', end: '', bullets: [] };
+      roles.push(current);
+      metaDone = false;
+      continue;
+    }
+    if (!current) continue;
+    const text = RANGE_RE.test(l.text) ? l.text.replace(DURATION_RE, '').replace(/\s*[(·]\s*$/, '').trim() : l.text;
+    const range = text.match(RANGE_RE);
+    if (range && onlyDates(text) && !current.start) {
+      [current.start, current.end] = [range[1].trim(), range[2].trim()];
+    } else if (TYPE_RE.test(text) && !current.employmentType) {
+      current.employmentType = text;
+    } else if (!metaDone && !BULLET_RE.test(text) && !isSentence(text) && text.length <= 80) {
+      Object.assign(current, splitMeta(text));
+      metaDone = true;
+    } else {
+      const bullet = text.replace(BULLET_RE, '').trim();
+      const last = current.bullets.length - 1;
+      if (last >= 0 && !BULLET_RE.test(text) && !isSentence(current.bullets[last])) current.bullets[last] += ` ${bullet}`;
+      else current.bullets.push(bullet);
+      metaDone = true;
+    }
+  }
+  return roles;
+}
+
+/** Certificates set as a bigger title with smaller lines under it: description(s), then the issuer. */
+function parseCertifications(lines: PdfLine[]): CVData['certifications'] {
+  const big = Math.max(...lines.map((l) => l.size));
+  const titled = lines.some((l) => l.size < big - 0.5) && lines.filter((l) => l.size >= big - 0.5).length >= 1 && lines[0]?.size >= big - 0.5;
+  if (!titled) {
+    return lines.map(({ text: l }) => {
+      const text = l.replace(BULLET_RE, '');
+      const year = text.match(SINGLE_YEAR_RE)?.[0] ?? '';
+      const [title, ...rest] = text.replace(year, '').split(/\s*,\s*/).filter(Boolean);
+      return { id: newId(), title: title?.replace(/\s*\(.*\)$/, '') ?? text, description: title?.match(/\((.*)\)$/)?.[1] ?? '', issuer: rest.join(', '), year };
+    });
+  }
+  const groups: string[][] = [];
+  for (const l of lines) {
+    if (l.size >= big - 0.5) groups.push([l.text.replace(BULLET_RE, '')]);
+    else groups.at(-1)?.push(l.text.replace(BULLET_RE, ''));
+  }
+  return groups.map(([title, ...under]) => {
+    const year = [title, ...under].join(' ').match(SINGLE_YEAR_RE)?.[0] ?? '';
+    const rest = under.map((u) => u.replace(year, '').replace(/^[\s|·,–-]+|[\s|·,(–-]+$/g, '').trim()).filter(Boolean);
+    const issuer = rest.length ? rest.pop()! : '';
+    return { id: newId(), title: title.replace(year, '').replace(/[\s|·,(–-]+$/, '').trim(), description: rest.join(' '), issuer, year };
+  });
+}
+
 const splitList = (text: string) =>
   text
     .replace(/^[^:]{1,30}:\s*/, '')
     .split(/\s*[,;|•·]\s*/)
-    .map((s) => s.trim())
-    .filter((s) => s && s.length < 60);
+    // "…, and more", "Figma, Miro and Notion": the closing "and" is not part of a name.
+    .map((s) => s.trim().replace(/^(?:and|e|et|y|und|en|ed)\s+/i, ''))
+    .filter((s) => s && s.length < 60 && !/^(?:more|altro|etc|and more|e altro)\.*$|^\.+$/i.test(s));
 
 /** The name: the biggest short line on the first page, when it clearly stands out. */
 function nameLine(lines: PdfLine[]) {
@@ -378,7 +481,7 @@ function parseLanguages(lines: string[]) {
 export function parseLines(lines: PdfLine[]): CVData {
   const cv: CVData = structuredClone(blankCV);
   const name = nameLine(lines);
-  const buckets: Record<Bucket, string[]> = { header: [], summary: [], experience: [], education: [], skills: [], tools: [], certifications: [], languages: [], other: [] };
+  const buckets: Record<Bucket, PdfLine[]> = { header: [], summary: [], experience: [], education: [], skills: [], tools: [], certifications: [], languages: [], other: [] };
   let bucket: Bucket = 'header';
   const sizes = lines.map((l) => l.size).sort((a, b) => a - b);
   const bodySize = sizes[Math.floor(sizes.length / 2)] ?? 10;
@@ -388,11 +491,16 @@ export function parseLines(lines: PdfLine[]): CVData {
   lines.forEach((line, i) => {
     // The name opens the header, also when a sidebar was read before it (LinkedIn).
     if (line === name) return void (bucket = 'header');
+    // A new column on the same page starts outside any section until a heading says otherwise:
+    // text at the top of a sidebar (an introduction) is not the end of the other column's section.
+    const prev = lines[i - 1];
+    if (prev && prev.page === line.page && prev.column !== line.column) bucket = 'header';
     // A loose heading names a section not seen yet, and is not a job title followed by its dates.
     const loose = () => {
       // The line under the name is the headline, whatever words it holds.
       if (lines[i - 1] === name) return null;
-      const b = looseHeadingOf(line, bodySize);
+      const listFollows = splitList(lines[i + 1]?.text ?? '').length >= 3;
+      const b = looseHeadingOf(line, bodySize, listFollows);
       // A job title followed by its dates is not a heading, unless it is set exactly like the headings.
       const nextIsDates = onlyDates(lines[i + 1]?.text ?? '');
       const asHeading = headingSize > 0 && Math.abs(line.size - headingSize) < 0.5;
@@ -404,11 +512,12 @@ export function parseLines(lines: PdfLine[]): CVData {
     if (h) {
       bucket = h;
       seen.add(h);
-    } else buckets[bucket].push(line.text);
+    } else buckets[bucket].push(line);
   });
+  const text = (b: Bucket) => buckets[b].map((l) => l.text);
 
   // Header: name, headline, contact details. Other lines there usually belong to the summary.
-  const header = buckets.header.filter((l) => !/^(cv|curriculum vitae|resume|résumé|lebenslauf)$/i.test(l));
+  const header = text('header').filter((l) => !/^(cv|curriculum vitae|resume|résumé|lebenslauf)$/i.test(l));
   const plain: string[] = [];
   // The current header line holds several contact details ("email · phone · city").
   let among = false;
@@ -418,7 +527,8 @@ export function parseLines(lines: PdfLine[]): CVData {
     if (/linkedin\.com/i.test(bit)) return void (cv.profile.linkedin ||= bit.match(URL_RE)?.[0] ?? bit);
     if (PHONE_RE.test(bit) && !SINGLE_YEAR_RE.test(bit.replace(PHONE_RE, ''))) return void (cv.profile.phone ||= bit.match(PHONE_RE)![0].trim());
     if (URL_RE.test(bit) && !bit.includes(' ')) return void (cv.profile.website ||= bit);
-    if (/^[\p{L}' .-]+,\s*[\p{L}' .-]+$/u.test(bit) && bit.length <= 40) return void (cv.profile.location ||= bit);
+    // "Rennes, France": every part starts with a capital, so "I'm Daniele, passionate about design" is not a place.
+    if (/^\p{Lu}[\p{L}' .-]*,\s*\p{Lu}[\p{L}' .-]*$/u.test(bit) && bit.length <= 40) return void (cv.profile.location ||= bit);
     // "Paris, Île-de-France, France": only after the headline, or next to other contact details,
     // so a headline like "Designer, Researcher, Writer" stays the headline.
     if (/^[\p{L}' .-]+(?:,\s*[\p{L}' .-]+){2}$/u.test(bit) && bit.length <= 48 && (plain.length > 0 || among)) return void (cv.profile.location ||= bit);
@@ -432,30 +542,28 @@ export function parseLines(lines: PdfLine[]): CVData {
   }
   cv.profile.name = name?.text ?? plain.shift() ?? '';
   cv.profile.headline = plain.shift() ?? '';
-  if (!buckets.summary.length) buckets.summary.push(...plain);
+  const summary = text('summary');
+  if (!summary.length) summary.push(...plain);
 
-  cv.summary = buckets.summary.join(' ').replace(/\s+/g, ' ').trim();
-  cv.experience = parseExperience(buckets.experience);
+  cv.summary = summary.join(' ').replace(/\s+/g, ' ').trim();
+  const byLayout = parseExperience(text('experience'));
+  const byTitles = parseExperienceByTitles(buckets.experience);
+  cv.experience = byTitles.length > byLayout.length ? byTitles : byLayout;
 
   // Skills: "Core skills: a, b" and "Tools: x, y" lines, or plain lists.
-  for (const l of buckets.skills) {
+  for (const l of text('skills')) {
     if (/^(tools|strumenti|outils|herramientas|ferramentas|werkzeuge|stack)\b/i.test(l)) {
       cv.tools.push(...splitList(l).map((name) => ({ id: newId(), name, description: '' })));
     } else cv.skills.push(...splitList(l.replace(BULLET_RE, '')));
   }
-  for (const l of buckets.tools) cv.tools.push(...splitList(l.replace(BULLET_RE, '')).map((name) => ({ id: newId(), name, description: '' })));
+  for (const l of text('tools')) cv.tools.push(...splitList(l.replace(BULLET_RE, '')).map((name) => ({ id: newId(), name, description: '' })));
   cv.skills = [...new Set(cv.skills)];
 
-  cv.education = parseEducation(buckets.education);
+  cv.education = parseEducation(text('education'));
 
-  cv.certifications = buckets.certifications.map((l) => {
-    const text = l.replace(BULLET_RE, '');
-    const year = text.match(SINGLE_YEAR_RE)?.[0] ?? '';
-    const [title, ...rest] = text.replace(year, '').split(/\s*,\s*/).filter(Boolean);
-    return { id: newId(), title: title?.replace(/\s*\(.*\)$/, '') ?? text, description: title?.match(/\((.*)\)$/)?.[1] ?? '', issuer: rest.join(', '), year };
-  });
+  cv.certifications = buckets.certifications.length ? parseCertifications(buckets.certifications) : [];
 
-  cv.languages = parseLanguages(buckets.languages);
+  cv.languages = parseLanguages(text('languages'));
 
   // Nothing recognised as sections: keep the text in the summary so nothing is lost.
   if (!cv.summary && !cv.experience.length && !cv.skills.length) cv.summary = lines.slice(2).map((l) => l.text).join(' ');

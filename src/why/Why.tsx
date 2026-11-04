@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Accessibility, Github, Languages, Link2, Lock, Pause, Play, Smartphone, X } from 'lucide-react';
 import { SiteHeader } from '../app/components/SiteHeader';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
 import { Documents } from './Documents';
+import { Press } from './Press';
 import { SiteFooter } from '../app/components/SiteFooter';
 import { Closing, Part, WithName, body, label, wrap } from './parts';
 
@@ -13,6 +14,7 @@ export function Why() {
   const { m } = useI18n();
   const w = m.why;
   const [paused, setPaused] = useState(false);
+  const [pressPaused, setPressPaused] = useState(false);
   const [still] = useState(reducedMotion);
   const heroRef = useReveal<HTMLDivElement>(0.1);
 
@@ -20,6 +22,7 @@ export function Why() {
     document.title = `${w.nav} · ${m.app.name}`;
   }, [w.nav, m.app.name]);
 
+  const asks = [w.ask1, w.ask2, w.ask3, w.ask4, w.ask5, w.ask6];
   const does = [
     [w.does1t, w.does1],
     [w.does2t, w.does2],
@@ -48,20 +51,34 @@ export function Why() {
               <p className={label}>{w.kicker}</p>
               <span className="-mt-4 font-title text-[96px] leading-none md:-mt-8 md:text-[160px]" aria-hidden="true">*</span>
             </div>
-            <h1 className="max-w-[16ch] font-title text-[clamp(2.25rem,8vw,3.75rem)] font-normal leading-[0.95] hyphens-auto [overflow-wrap:break-word] md:text-[clamp(3rem,6.5vw,7rem)] md:hyphens-manual">
-              {w.title}
+            <h1 className="max-w-[22ch] font-title text-[clamp(2.25rem,8vw,3.75rem)] font-normal leading-[0.95] hyphens-auto [overflow-wrap:break-word] md:text-[clamp(3rem,5.6vw,6.25rem)] md:hyphens-manual">
+              {w.title} <span className="text-ink-soft">{w.titleNot}</span>
             </h1>
-            {/* The idea, said once: passport and licence are standard, the CV should be too. */}
-            <div className="mt-12 max-w-[46ch] space-y-5">
-              <p className="font-body text-2xl leading-snug md:text-3xl">{w.intro1}</p>
-              <p className={body}>{w.intro2}</p>
-              <p className={body}>{w.intro3}</p>
+            {/* The freestyle part: the questions everyone answers alone, crossed out one by one. */}
+            <div className="mt-14 grid gap-12 md:mt-20 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-end md:gap-16">
+              <div>
+                <p className={label}>{w.asksLabel}</p>
+                <ul className="mt-5 flex flex-wrap gap-2">
+                  {asks.map((a, i) => (
+                    <li
+                      key={a}
+                      className="strike rounded-full border border-rule px-4 py-2 font-body text-lg leading-snug text-ink-soft md:text-xl"
+                      style={{ '--d': `${500 + i * 160}ms` } as CSSProperties}
+                    >
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className={body}>{w.time}</p>
+                <p className="mt-6 font-title text-2xl leading-tight md:text-4xl">
+                  <span className="hl" style={{ transitionDelay: '1500ms' }}>
+                    <WithName text={w.idea3} />
+                  </span>
+                </p>
+              </div>
             </div>
-            <p className="mt-10 font-title text-2xl leading-tight md:text-4xl">
-              <span className="hl">
-                <WithName text={w.idea3} />
-              </span>
-            </p>
           </div>
         </section>
 
@@ -135,6 +152,29 @@ export function Why() {
             ))}
           </ul>
         </Part>
+
+        {/* One layout for everyone: the press prints the same CV with a new name and files it. */}
+        <section aria-labelledby="press" className={`border-t border-ink ${wrap} py-16 md:py-24`}>
+          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <div>
+              <h2 id="press" className="max-w-[24ch] font-title text-3xl leading-[1.05] md:text-5xl">{w.pressTitle}</h2>
+              <p className={`mt-4 ${body}`}>{w.pressLead}</p>
+            </div>
+            {!still && (
+              <button
+                type="button"
+                onClick={() => setPressPaused((p) => !p)}
+                className="inline-flex h-9 items-center gap-2 rounded-sm px-2 text-[14px] hover:bg-zinc-100"
+              >
+                {pressPaused ? <Play size={20} aria-hidden="true" /> : <Pause size={20} aria-hidden="true" />}
+                {pressPaused ? w.play : w.pause}
+              </button>
+            )}
+          </div>
+          <div className="mt-6 md:mt-8">
+            <Press paused={pressPaused} />
+          </div>
+        </section>
 
         <Closing root="../" />
       </main>
