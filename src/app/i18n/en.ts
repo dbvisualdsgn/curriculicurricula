@@ -425,7 +425,15 @@ export const en = {
   why: {
     nav: 'Why',
     kicker: 'Why it exists',
-    title: 'A CV should be a standard format. Not a design project.',
+    title: 'A CV should be a standard document.',
+    titleNot: 'Not a freestyle exercise before every interview.',
+    asksLabel: 'Before every application',
+    ask1: 'Which font?',
+    ask2: 'One column or two?',
+    ask3: 'Which colours?',
+    ask4: 'Photo or no photo?',
+    ask5: 'One page or two?',
+    ask6: 'Will software read it?',
     docsTitle: 'Two of these are standard. The third should be too.',
     docsLead: 'Amara is a nurse in Manchester. Three documents, each with one job to do.',
     passport: 'Passport',
@@ -462,8 +470,7 @@ export const en = {
     all2: 'Easy to read on a phone',
     all3: 'Built for screen readers and keyboards',
     all4: 'Code public on GitHub',
-    intro: 'Passports and driving licences are designed once, the same for everyone. CVs aren’t.',
-    afterDocs: 'Everyone has to invent their own: typefaces, columns, colours, words. Not knowing how is normal. And your time is better spent on your work, and on applying.',
+    time: 'You shouldn’t have to spend days on a layout. Your time is better spent on your work, and on applying.',
   },};
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> 
