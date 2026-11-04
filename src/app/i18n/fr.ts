@@ -448,6 +448,8 @@ export const fr: Messages = {
     pause: 'Mettre l’animation en pause',
     play: 'Relancer l’animation',
     idea3: '{name} est né pour changer cela.',
+    pressTitle: 'Un modèle, conçu une fois. Pour tout le monde.',
+    pressLead: 'Le nom et le parcours changent. Le modèle reste le même, clair pour tout le monde.',
     doesTitle: 'Ce qu’il fait',
     doesLead: 'Un modèle unique, fait pour être lu : par une personne qui a quelques secondes, et par un logiciel qui cherche des mots-clés.',
     does1t: 'Écrivez',

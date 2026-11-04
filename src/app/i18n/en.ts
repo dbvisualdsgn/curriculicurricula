@@ -447,6 +447,8 @@ export const en = {
     pause: 'Pause the animation',
     play: 'Play the animation',
     idea3: '{name} was made to change that.',
+    pressTitle: 'One layout, designed once. For everyone.',
+    pressLead: 'The name and the story change. The layout stays the same, clear for everyone.',
     doesTitle: 'What it does',
     doesLead: 'One template, made to be read: by a person with a few seconds, and by software looking for keywords.',
     does1t: 'Write',

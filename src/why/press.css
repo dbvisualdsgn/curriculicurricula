@@ -1,0 +1,83 @@
+@import '../app/iso/site.css';
+
+/* Why page: the press (scripts/desk-hero/press.mjs). One sheet every 6s: out of the feed tray, under the head,
+   along the belt, into the open catalogue. The sheet is drawn where it ends, which is what reduced motion shows;
+   the loop runs once the figure is seen and stops with the section's Pause button. */
+.press-art .press-ink { fill: var(--ink); }
+.press-art .press-hl { fill: var(--highlight); }
+.press-art .press-dot { fill: var(--ink); }
+.press-art .press-plate, .press-art .press-gear, .press-art .press-label { fill: var(--panel); }
+.press-art .press-gear-in { fill: var(--anatomy-shade-2); }
+.press-art .press-gear-back { fill: var(--anatomy-shade-0); }
+.press-art .press-name { font-family: var(--font-title); letter-spacing: -0.01em; }
+.press-art .press-count { fill: var(--paper); font-family: var(--font-mono); letter-spacing: 0.18em; }
+.press-art .press-on-ink-line { stroke: color-mix(in srgb, var(--paper) 35%, var(--ink)); stroke-width: 0.6px; }
+.press-art .press-letters { fill: var(--ink); font-family: var(--font-mono); letter-spacing: 0.02em; }
+.press-art .press-rubber > .iso-top, .press-art .press-rubber > .iso-shade, .press-art .press-rubber > .iso-fill { fill: color-mix(in srgb, var(--ink) 70%, var(--paper)); }
+.press-art .press-platen > .iso-top, .press-art .press-platen > .iso-shade, .press-art .press-platen > .iso-fill { fill: color-mix(in srgb, var(--ink) 80%, var(--paper)); }
+.press-art .press-belt > .iso-top { fill: color-mix(in srgb, var(--ink) 11%, var(--paper)); }
+.press-art .press-file > .iso-top { fill: color-mix(in srgb, var(--paper) 88%, var(--ink)); }
+.press-art .press-gap > .iso-top, .press-art .press-gap > .iso-shade { fill: var(--highlight); }
+.press-art .press-gap > .iso-shade { fill: color-mix(in srgb, var(--highlight) 72%, var(--ink)); }
+.press-art .press-spin { transform-box: view-box; transform-origin: 0 0; }
+.press-art .press-spring, .press-art .press-print { transform-box: fill-box; transform-origin: 50% 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes press-sheet {
+    0% { translate: var(--at-feed); opacity: 0; }
+    3% { translate: var(--at-feed); opacity: 1; }
+    15%, 36% { translate: var(--at-press); }
+    62% { translate: var(--at-end); }
+    70% { translate: var(--at-over); }
+    73%, 92% { translate: 0 0; opacity: 1; }
+    98%, 100% { translate: 0 0; opacity: 0; }
+  }
+  @keyframes press-print {
+    0%, 24% { opacity: 0; }
+    27%, 100% { opacity: 1; }
+  }
+  @keyframes press-head {
+    0%, 18% { translate: 0 0; }
+    24%, 27% { translate: var(--down); }
+    34%, 100% { translate: 0 0; }
+  }
+  @keyframes press-spring {
+    0%, 18% { scale: 1 1; }
+    24%, 27% { scale: 1 1.72; }
+    34%, 100% { scale: 1 1; }
+  }
+  @keyframes press-lamp {
+    0%, 19% { fill: var(--anatomy-top); }
+    22%, 32% { fill: var(--highlight); }
+    36%, 100% { fill: var(--anatomy-top); }
+  }
+  @keyframes press-belt {
+    0%, 36% { stroke-dashoffset: 0; }
+    70%, 100% { stroke-dashoffset: -36; }
+  }
+  @keyframes press-spin {
+    to { rotate: calc(360deg * var(--dir)); }
+  }
+  .press .press-sheet, .press .press-print, .press .press-head, .press .press-spring, .press .press-lamp .iso-top, .press .press-belt-marks path {
+    animation: 6s cubic-bezier(0.45, 0, 0.55, 1) infinite both paused;
+  }
+  .press .press-sheet { animation-name: press-sheet; }
+  .press .press-print { animation-name: press-print; }
+  .press .press-head { animation-name: press-head; }
+  .press .press-spring { animation-name: press-spring; }
+  .press .press-lamp .iso-top { animation-name: press-lamp; }
+  .press .press-belt-marks path { animation-name: press-belt; }
+  .press .press-spin { animation: press-spin var(--turn) linear infinite paused; }
+  .press.is-in:not([data-paused]) :is(.press-sheet, .press-print, .press-head, .press-spring, .press-spin),
+  .press.is-in:not([data-paused]) .press-lamp .iso-top,
+  .press.is-in:not([data-paused]) .press-belt-marks path { animation-play-state: running; }
+}
+
+/* The drive belt: a dark band whose marks run with the gears. */
+.press-art .press-strap { fill: color-mix(in srgb, var(--ink) 72%, var(--paper)); }
+.press-art .press-strap-marks { fill: none; stroke: var(--paper); stroke-width: 0.6px; stroke-dasharray: 1.2 4; }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes press-strap { to { stroke-dashoffset: -52; } }
+  .press .press-strap-marks { animation: press-strap 2s linear infinite paused; }
+  .press.is-in:not([data-paused]) .press-strap-marks { animation-play-state: running; }
+}

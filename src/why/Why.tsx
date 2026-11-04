@@ -4,6 +4,7 @@ import { SiteHeader } from '../app/components/SiteHeader';
 import { useReveal } from '../app/hooks/useReveal';
 import { useI18n } from '../app/i18n';
 import { Documents } from './Documents';
+import { Press } from './Press';
 import { SiteFooter } from '../app/components/SiteFooter';
 import { Closing, Part, WithName, body, label, wrap } from './parts';
 
@@ -13,6 +14,7 @@ export function Why() {
   const { m } = useI18n();
   const w = m.why;
   const [paused, setPaused] = useState(false);
+  const [pressPaused, setPressPaused] = useState(false);
   const [still] = useState(reducedMotion);
   const heroRef = useReveal<HTMLDivElement>(0.1);
 
@@ -150,6 +152,29 @@ export function Why() {
             ))}
           </ul>
         </Part>
+
+        {/* One layout for everyone: the press prints the same CV with a new name and files it. */}
+        <section aria-labelledby="press" className={`border-t border-ink ${wrap} py-16 md:py-24`}>
+          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <div>
+              <h2 id="press" className="max-w-[24ch] font-title text-3xl leading-[1.05] md:text-5xl">{w.pressTitle}</h2>
+              <p className={`mt-4 ${body}`}>{w.pressLead}</p>
+            </div>
+            {!still && (
+              <button
+                type="button"
+                onClick={() => setPressPaused((p) => !p)}
+                className="inline-flex h-9 items-center gap-2 rounded-sm px-2 text-[14px] hover:bg-zinc-100"
+              >
+                {pressPaused ? <Play size={20} aria-hidden="true" /> : <Pause size={20} aria-hidden="true" />}
+                {pressPaused ? w.play : w.pause}
+              </button>
+            )}
+          </div>
+          <div className="mt-6 md:mt-8">
+            <Press paused={pressPaused} />
+          </div>
+        </section>
 
         <Closing root="../" />
       </main>

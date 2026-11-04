@@ -448,6 +448,8 @@ export const de: Messages = {
     pause: 'Animation anhalten',
     play: 'Animation abspielen',
     idea3: '{name} ist entstanden, um das zu ändern.',
+    pressTitle: 'Ein Layout, einmal gestaltet. Für alle.',
+    pressLead: 'Name und Geschichte ändern sich. Das Layout bleibt gleich, klar für alle.',
     doesTitle: 'Was es macht',
     doesLead: 'Eine einzige Vorlage, gemacht zum Lesen: von einer Person mit wenigen Sekunden und von Software, die nach Schlüsselwörtern sucht.',
     does1t: 'Schreiben',

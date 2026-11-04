@@ -448,6 +448,8 @@ export const nl: Messages = {
     pause: 'Animatie pauzeren',
     play: 'Animatie afspelen',
     idea3: '{name} is gemaakt om dat te veranderen.',
+    pressTitle: 'Eén opmaak, één keer ontworpen. Voor iedereen.',
+    pressLead: 'De naam en het verhaal veranderen. De opmaak blijft hetzelfde, duidelijk voor iedereen.',
     doesTitle: 'Wat het doet',
     doesLead: 'Eén sjabloon, gemaakt om gelezen te worden: door iemand met een paar seconden, en door software die naar trefwoorden zoekt.',
     does1t: 'Schrijf',
