@@ -463,8 +463,7 @@ export const pt: Messages = {
     all2: 'Fácil de ler no telemóvel',
     all3: 'Pensado para leitores de ecrã e teclado',
     all4: 'Código público no GitHub',
-    intro1: 'Para viajar precisas de um passaporte. Para conduzir, de uma carta. São desenhados uma vez, com cuidado, iguais para todos.',
-    intro2: 'O CV não. Cada pessoa tem de inventar o seu: letras, colunas, cores, palavras. Não saber fazê-lo é normal. Ninguém ensina.',
-    intro3: 'E não devias passar dias a paginá-lo. O teu tempo vale mais no teu trabalho e nas candidaturas.',
+    intro: 'O passaporte e a carta de condução são desenhados uma vez, iguais para todos. O CV não.',
+    afterDocs: 'Cada pessoa tem de inventar o seu: letras, colunas, cores, palavras. Não saber fazê-lo é normal. E o teu tempo vale mais no teu trabalho e nas candidaturas.',
   },
 };

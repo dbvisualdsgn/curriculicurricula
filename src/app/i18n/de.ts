@@ -463,8 +463,7 @@ export const de: Messages = {
     all2: 'Gut lesbar auf dem Handy',
     all3: 'Gemacht für Screenreader und Tastatur',
     all4: 'Code öffentlich auf GitHub',
-    intro1: 'Zum Reisen brauchst du einen Pass. Zum Fahren einen Führerschein. Beide werden einmal gestaltet, mit Sorgfalt, gleich für alle.',
-    intro2: 'Der Lebenslauf nicht. Alle müssen ihren eigenen erfinden: Schriften, Spalten, Farben, Worte. Es nicht zu können ist normal. Niemand bringt es einem bei.',
-    intro3: 'Und du solltest keine Tage mit dem Layout verbringen. Deine Zeit ist in deiner Arbeit und deinen Bewerbungen besser aufgehoben.',
+    intro: 'Pass und Führerschein werden einmal gestaltet, gleich für alle. Der Lebenslauf nicht.',
+    afterDocs: 'Alle müssen ihren eigenen erfinden: Schriften, Spalten, Farben, Worte. Es nicht zu können ist normal. Und deine Zeit ist in deiner Arbeit und deinen Bewerbungen besser aufgehoben.',
   },
 };

@@ -463,8 +463,7 @@ export const es: Messages = {
     all2: 'Fácil de leer en el móvil',
     all3: 'Pensado para lectores de pantalla y teclado',
     all4: 'Código público en GitHub',
-    intro1: 'Para viajar necesitas un pasaporte. Para conducir, un carné. Se diseñan una vez, con cuidado, iguales para todos.',
-    intro2: 'El CV no. Cada persona tiene que inventarse el suyo: tipografías, columnas, colores, palabras. No saber hacerlo es normal. Nadie lo enseña.',
-    intro3: 'Y no deberías pasar días maquetándolo. Tu tiempo vale más para tu trabajo, y para presentarte a ofertas.',
+    intro: 'El pasaporte y el carné se diseñan una vez, iguales para todos. El CV no.',
+    afterDocs: 'Cada persona tiene que inventarse el suyo: tipografías, columnas, colores, palabras. No saber hacerlo es normal. Y tu tiempo vale más para tu trabajo, y para presentarte a ofertas.',
   },
 };

@@ -462,9 +462,8 @@ export const en = {
     all2: 'Easy to read on a phone',
     all3: 'Built for screen readers and keyboards',
     all4: 'Code public on GitHub',
-    intro1: 'To travel you need a passport. To drive, a licence. Both are designed once, with care, the same for everyone.',
-    intro2: 'A CV isn’t. Everyone has to invent their own: typefaces, columns, colours, words. Not knowing how is normal. Nobody teaches it.',
-    intro3: 'And you shouldn’t have to spend days on a layout. Your time is better spent on your work, and on applying.',
+    intro: 'Passports and driving licences are designed once, the same for everyone. CVs aren’t.',
+    afterDocs: 'Everyone has to invent their own: typefaces, columns, colours, words. Not knowing how is normal. And your time is better spent on your work, and on applying.',
   },};
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> 

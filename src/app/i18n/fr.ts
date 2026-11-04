@@ -463,8 +463,7 @@ export const fr: Messages = {
     all2: 'Facile à lire sur téléphone',
     all3: 'Pensé pour les lecteurs d’écran et le clavier',
     all4: 'Code public sur GitHub',
-    intro1: 'Pour voyager, il faut un passeport. Pour conduire, un permis. Ils sont conçus une fois, avec soin, pareils pour tous.',
-    intro2: 'Le CV, non. Chacun doit inventer le sien : polices, colonnes, couleurs, mots. Ne pas savoir le faire, c’est normal. Personne ne l’apprend.',
-    intro3: 'Et vous ne devriez pas passer des jours sur une mise en page. Votre temps est plus utile pour votre travail, et pour postuler.',
+    intro: 'Le passeport et le permis sont conçus une fois, pareils pour tous. Le CV, non.',
+    afterDocs: 'Chacun doit inventer le sien : polices, colonnes, couleurs, mots. Ne pas savoir le faire, c’est normal. Et votre temps est plus utile pour votre travail, et pour postuler.',
   },
 };

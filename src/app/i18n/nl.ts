@@ -463,8 +463,7 @@ export const nl: Messages = {
     all2: 'Goed leesbaar op je telefoon',
     all3: 'Gemaakt voor schermlezers en toetsenbord',
     all4: 'Code openbaar op GitHub',
-    intro1: 'Om te reizen heb je een paspoort nodig. Om te rijden een rijbewijs. Ze worden één keer ontworpen, met zorg, voor iedereen hetzelfde.',
-    intro2: 'Een cv niet. Iedereen moet het zelf verzinnen: letters, kolommen, kleuren, woorden. Het niet kunnen is normaal. Niemand leert het je.',
-    intro3: 'En je zou geen dagen aan opmaak moeten besteden. Je tijd is beter besteed aan je werk, en aan solliciteren.',
+    intro: 'Paspoort en rijbewijs worden één keer ontworpen, voor iedereen hetzelfde. Een cv niet.',
+    afterDocs: 'Iedereen moet het zelf verzinnen: letters, kolommen, kleuren, woorden. Het niet kunnen is normaal. En je tijd is beter besteed aan je werk, en aan solliciteren.',
   },
 };

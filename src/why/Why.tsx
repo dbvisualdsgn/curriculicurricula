@@ -51,13 +51,9 @@ export function Why() {
             <h1 className="max-w-[16ch] font-title text-[clamp(2.25rem,8vw,3.75rem)] font-normal leading-[0.95] hyphens-auto [overflow-wrap:break-word] md:text-[clamp(3rem,6.5vw,7rem)] md:hyphens-manual">
               {w.title}
             </h1>
-            {/* The idea, said once: passport and licence are standard, the CV should be too. */}
-            <div className="mt-12 max-w-[46ch] space-y-5">
-              <p className="font-body text-2xl leading-snug md:text-3xl">{w.intro1}</p>
-              <p className={body}>{w.intro2}</p>
-              <p className={body}>{w.intro3}</p>
-            </div>
-            <p className="mt-10 font-title text-2xl leading-tight md:text-4xl">
+            {/* The idea, said once and short: the documents below show it. */}
+            <p className="mt-10 max-w-[40ch] font-body text-2xl leading-snug md:mt-12 md:text-3xl">{w.intro}</p>
+            <p className="mt-8 font-title text-2xl leading-tight md:text-4xl">
               <span className="hl">
                 <WithName text={w.idea3} />
               </span>
@@ -84,6 +80,7 @@ export function Why() {
             )}
           </div>
           <Documents />
+          <p className={`mt-12 ${body}`}>{w.afterDocs}</p>
         </section>
 
         <Part id="does" title={w.doesTitle}>
