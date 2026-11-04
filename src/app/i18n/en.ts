@@ -115,8 +115,8 @@ export const en = {
     privNote: 'Your CV is saved in this browser and goes nowhere else. Only a link you share carries it.',
     shownBelow: 'Shown below',
     showMe: 'See how it works',
-    claimA: 'A clear CV,',
-    claimB: 'without designing one.',
+    claimA: 'A free',
+    claimB: 'CV template.',
     heroPause: 'Pause',
     heroPlay: 'Play',
     heroCaption: 'Faces from old banknotes, as CVs',
@@ -187,7 +187,7 @@ export const en = {
   home: {
     openCV: 'Open my CV',
     kicker: 'A CV tool. Nothing more.',
-    sub: 'Start from the CV you already have, as a PDF, or from a blank page. You get one calm, standard format that puts your skills and experience first. Free, with no account.',
+    sub: 'Import → Edit → Apply. No account, nothing stored online.',
     start: 'Start writing',
     example: 'See examples',
     howTitle: 'How it works',
@@ -426,7 +426,6 @@ export const en = {
     nav: 'Why',
     kicker: 'Why it exists',
     title: 'A CV should be a standard document.',
-    titleNot: 'Not a freestyle exercise before every interview.',
     asksLabel: 'Before every application',
     ask1: 'Which font?',
     ask2: 'One column or two?',
@@ -472,7 +471,6 @@ export const en = {
     all2: 'Easy to read on a phone',
     all3: 'Built for screen readers and keyboards',
     all4: 'Code public on GitHub',
-    time: 'You shouldn’t have to spend days on a layout. Your time is better spent on your work, and on applying.',
   },};
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> 

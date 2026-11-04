@@ -52,7 +52,7 @@ export function Why() {
               <span className="-mt-4 font-title text-[96px] leading-none md:-mt-8 md:text-[160px]" aria-hidden="true">*</span>
             </div>
             <h1 className="max-w-[22ch] font-title text-[clamp(2.25rem,8vw,3.75rem)] font-normal leading-[0.95] hyphens-auto [overflow-wrap:break-word] md:text-[clamp(3rem,5.6vw,6.25rem)] md:hyphens-manual">
-              {w.title} <span className="text-ink-soft">{w.titleNot}</span>
+              {w.title}
             </h1>
             {/* The freestyle part: the questions everyone answers alone, crossed out one by one. */}
             <div className="mt-14 grid gap-12 md:mt-20 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-end md:gap-16">
@@ -71,8 +71,7 @@ export function Why() {
                 </ul>
               </div>
               <div>
-                <p className={body}>{w.time}</p>
-                <p className="mt-6 font-title text-2xl leading-tight md:text-4xl">
+                <p className="font-title text-2xl leading-tight md:text-4xl">
                   <span className="hl" style={{ transitionDelay: '1500ms' }}>
                     <WithName text={w.idea3} />
                   </span>
