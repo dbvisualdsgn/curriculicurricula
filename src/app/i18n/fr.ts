@@ -427,7 +427,6 @@ export const fr: Messages = {
     nav: 'Pourquoi',
     kicker: 'Pourquoi il existe',
     title: 'Le CV devrait être un document standard.',
-    titleNot: 'Pas un exercice de style avant chaque entretien.',
     asksLabel: 'Avant chaque candidature',
     ask1: 'Quelle police ?',
     ask2: 'Une colonne ou deux ?',
@@ -473,6 +472,5 @@ export const fr: Messages = {
     all2: 'Facile à lire sur téléphone',
     all3: 'Pensé pour les lecteurs d’écran et le clavier',
     all4: 'Code public sur GitHub',
-    time: 'Vous ne devriez pas passer des jours sur une mise en page. Votre temps est plus utile pour votre travail, et pour postuler.',
   },
 };

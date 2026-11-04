@@ -427,7 +427,6 @@ export const de: Messages = {
     nav: 'Warum',
     kicker: 'Warum es das gibt',
     title: 'Der Lebenslauf sollte ein Standarddokument sein.',
-    titleNot: 'Keine Stilübung vor jedem Vorstellungsgespräch.',
     asksLabel: 'Vor jeder Bewerbung',
     ask1: 'Welche Schrift?',
     ask2: 'Eine Spalte oder zwei?',
@@ -473,6 +472,5 @@ export const de: Messages = {
     all2: 'Gut lesbar auf dem Handy',
     all3: 'Gemacht für Screenreader und Tastatur',
     all4: 'Code öffentlich auf GitHub',
-    time: 'Du solltest keine Tage mit dem Layout verbringen. Deine Zeit ist in deiner Arbeit und deinen Bewerbungen besser aufgehoben.',
   },
 };

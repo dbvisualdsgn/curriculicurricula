@@ -427,7 +427,6 @@ export const pt: Messages = {
     nav: 'Porquê',
     kicker: 'Porque existe',
     title: 'O CV devia ser um documento padrão.',
-    titleNot: 'Não um exercício de estilo antes de cada entrevista.',
     asksLabel: 'Antes de cada candidatura',
     ask1: 'Que letra?',
     ask2: 'Uma coluna ou duas?',
@@ -473,6 +472,5 @@ export const pt: Messages = {
     all2: 'Fácil de ler no telemóvel',
     all3: 'Pensado para leitores de ecrã e teclado',
     all4: 'Código público no GitHub',
-    time: 'Não devias passar dias a paginá-lo. O teu tempo vale mais no teu trabalho e nas candidaturas.',
   },
 };

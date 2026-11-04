@@ -426,7 +426,6 @@ export const en = {
     nav: 'Why',
     kicker: 'Why it exists',
     title: 'A CV should be a standard document.',
-    titleNot: 'Not a freestyle exercise before every interview.',
     asksLabel: 'Before every application',
     ask1: 'Which font?',
     ask2: 'One column or two?',
@@ -472,7 +471,6 @@ export const en = {
     all2: 'Easy to read on a phone',
     all3: 'Built for screen readers and keyboards',
     all4: 'Code public on GitHub',
-    time: 'You shouldn’t have to spend days on a layout. Your time is better spent on your work, and on applying.',
   },};
 
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> 

@@ -427,7 +427,6 @@ export const nl: Messages = {
     nav: 'Waarom',
     kicker: 'Waarom het bestaat',
     title: 'Een cv zou een standaarddocument moeten zijn.',
-    titleNot: 'Geen stijloefening voor elk sollicitatiegesprek.',
     asksLabel: 'Voor elke sollicitatie',
     ask1: 'Welk lettertype?',
     ask2: 'Eén kolom of twee?',
@@ -473,6 +472,5 @@ export const nl: Messages = {
     all2: 'Goed leesbaar op je telefoon',
     all3: 'Gemaakt voor schermlezers en toetsenbord',
     all4: 'Code openbaar op GitHub',
-    time: 'Je zou geen dagen aan opmaak moeten besteden. Je tijd is beter besteed aan je werk, en aan solliciteren.',
   },
 };
