@@ -36,7 +36,10 @@ const PILE = 8;
 const PILE_TOP = TRAY_Z + 1.2 + PILE * T;
 const DROP = Z - PILE_TOP; // how far the sheet falls off the belt
 
-const FIT = [...k.boxCorners(BASE, -BASE_H - 4, 0), ...k.boxCorners({ x: -84, y: -32, w: 68, d: 64 }, 0, Z + 70), ...k.boxCorners({ x: -30, y: -96, w: 238, d: 42 }, -12, 56)];
+// The pick-and-place gantry over the belt's end and the catalogue (see gantry()).
+const GANTRY = { x0: 64, x1: 172, y: -44, zb: 100, zt: 108, posts: [70, 166] };
+const HB_REST = Z + 22; // bottom of the suction cups at rest
+const FIT = [...k.boxCorners(BASE, -BASE_H - 4, 0), ...k.boxCorners({ x: -84, y: -32, w: 68, d: 64 }, 0, Z + 82), ...k.boxCorners({ x: -30, y: -96, w: 238, d: 42 }, -12, 56), ...k.boxCorners({ x: GANTRY.x0, y: -50, w: GANTRY.x1 - GANTRY.x0, d: 56 }, 0, 116)];
 // The frame's height follows the drawing, so the figure has no empty bands above or below it.
 const AZ = 48;
 const unit = k.fitProjection(FIT, WIDTH, 10000, { pad: 8, azimuth: AZ });
@@ -97,15 +100,15 @@ function base() {
 
 // ---------------------------------------------------------------------------------------------------------------
 // The CV template: the same layout on every sheet. `name` adds the live name (the moving sheet only).
-function template(cx, cy, z, { name = false } = {}) {
+function template(cx, cy, z, { name = false, part = "" } = {}) {
   const x0 = cx - SHEET.w / 2 + 3.5;
   const y0 = cy - SHEET.d / 2;
   const x1 = cx + SHEET.w / 2 - 3.5;
   const out = [];
   out.push(topRect(x0, y0 + 4, z, 8, 8, "press-ink", 0.3));
   if (name) {
-    out.push(topText(x0 + 10.5, y0 + 8.4, z, "Amara Okafor", { size: 3.3, cls: "press-name", weight: "600", part: "name" }));
-    out.push(topText(x0 + 10.5, y0 + 11.6, z, "Registered Nurse", { size: 1.9, tone: "mid", part: "role" }));
+    out.push(topText(x0 + 10.5, y0 + 8.4, z, "Amara Okafor", { size: 3.3, cls: "press-name", weight: "600", part: `${part}name` }));
+    out.push(topText(x0 + 10.5, y0 + 11.6, z, "Registered Nurse", { size: 1.9, tone: "mid", part: `${part}role` }));
   } else {
     out.push(line([x0 + 10.5, y0 + 7.4], [x0 + 28, y0 + 7.4], z, "hi", true));
     out.push(line([x0 + 10.5, y0 + 10.8], [x0 + 22, y0 + 10.8], z, "lo", true));
@@ -314,7 +317,7 @@ function spring(x, y, half) {
   runs.push([near, run]);
   const want = half === "front";
   const d = runs.filter(([f]) => f === want).map(([, r]) => k.pathOf(r)).join("");
-  return `<g class="press-spring">${L(d, { tone: want ? "hi" : "lo" })}</g>`;
+  return `<g class="press-spring" data-part="spring">${L(d, { tone: want ? "hi" : "lo" })}</g>`;
 }
 function head() {
   const out = [];
@@ -328,7 +331,7 @@ function head() {
   parts.push(onFront(HEAD.y + HEAD.d, stroke(`M${HEAD.x + 2} ${-(HEAD_Z + 6)}H${HEAD.x + HEAD.w - 2}`, "faint") + `<circle class="press-dot" cx="${HEAD.x + 3.4}" cy="${-(HEAD_Z + 10)}" r="0.45"/><circle class="press-dot" cx="${HEAD.x + HEAD.w - 3.4}" cy="${-(HEAD_Z + 10)}" r="0.45"/>`));
   // Push rod up to the eccentric in the beam.
   parts.push(S(k.cylinder(PRESS_X, 0, 2.6, HEAD_Z + 2 + HEAD_H, BEAM_Z - (HEAD_Z + 2 + HEAD_H), P, 20), { tone: "hi" }));
-  out.push(`<g class="press-head" style="--down:${px(vec([0, 0, -STROKE]))}">${parts.join("")}</g>`);
+  out.push(`<g data-part="head">${parts.join("")}</g>`);
   return out.join("");
 }
 /** The drive: a belt in front of the bed from a pulley on the main gear's shaft up to a pulley on the eccentric's
@@ -376,7 +379,8 @@ function pressFront() {
   // Lamp on its stalk.
   const lamp = [BEAM.x + BEAM.w - 8, BEAM.y + BEAM.d - 8];
   out.push(S(k.cylinder(lamp[0], lamp[1], 1.2, BEAM_Z + 9, 5, P, 12), { tone: "hi" }));
-  out.push(`<g class="press-lamp">${S(k.cylinder(lamp[0], lamp[1], 3.4, BEAM_Z + 14, 3.6, P, 24, 0.6), { tone: "hi" })}</g>`);
+  out.push(`<g class="press-lamp" data-part="lamp">${S(k.cylinder(lamp[0], lamp[1], 3.4, BEAM_Z + 14, 3.6, P, 24, 0.6), { tone: "hi" })}</g>`);
+  out.push(governor());
   return out.join("");
 }
 
@@ -392,7 +396,7 @@ function beltBack() {
   for (const x of [BELT.x + 5, BELT.x + BELT.w - 5]) out.push(S(G.solidOf([[0, 5], [BELT.d, 5]], G.frameAlong([x, BELT.y, Z - 5], [0, 1, 0]), P), { tone: "hi" }));
   out.push(box({ x: BELT.x + 5, y: BELT.y + 1, w: BELT.w - 10, d: BELT.d - 2, r: 0.4 }, Z - 1.2, 1.2, { tone: "hi", className: "press-belt" }, 2));
   // Belt marks on the front edge of the belt run toward the catalogue.
-  out.push(`<g class="press-belt-marks">${L(k.pathOf([at([BELT.x + 5, BELT.y + BELT.d - 1, Z - 0.6]), at([BELT.x + BELT.w - 5, BELT.y + BELT.d - 1, Z - 0.6])]), { tone: "lo", dashed: true, free: true })}</g>`);
+  out.push(`<g class="press-belt-marks" data-part="belt">${L(k.pathOf([at([BELT.x + 5, BELT.y + BELT.d - 1, Z - 0.6]), at([BELT.x + BELT.w - 5, BELT.y + BELT.d - 1, Z - 0.6])]), { tone: "lo", dashed: true, free: true })}</g>`);
   return out.join("");
 }
 function beltFront() {
@@ -404,7 +408,7 @@ function beltFront() {
   const ticks = [];
   for (let x = rail.x + 4; x < rail.x + rail.w - 2; x += 4) ticks.push(k.lineOnTop([x, rail.y + 0.6], [x, rail.y + (Math.round(x - rail.x) % 20 === 0 ? 2.6 : 1.6)], RAIL_Z1, P));
   out.push(L(ticks.join(""), { tone: "lo" }));
-  out.push(onFront(rail.y + rail.d, [BELT.x + 5, BELT.x + BELT.w - 5].map((u) => flat(circle(u, -(Z - 5), 2.4, 20), "press-gear") + stroke(circle(u, -(Z - 5), 2.4, 20), "hi") + `<circle class="press-dot" cx="${u}" cy="${-(Z - 5)}" r="0.6"/>`).join("") + stroke(`M${rail.x + 12} ${-(RAIL_Z0 + 3)}H${rail.x + rail.w - 12}`, "faint")));
+  out.push(onFront(rail.y + rail.d, [BELT.x + 5, BELT.x + BELT.w - 5].map((u) => `<g transform="translate(${u} ${-(Z - 5)})"><g class="press-spin" style="--turn:1.1s;--dir:1">${flat(circle(0, 0, 2.4, 20), "press-gear")}${stroke(circle(0, 0, 2.4, 20), "hi")}${stroke("M0 -0.8V-2", "lo")}${stroke("M0 0.8V2", "lo")}<circle class="press-dot" cx="0" cy="0" r="0.6"/></g></g>`).join("") + stroke(`M${rail.x + 12} ${-(RAIL_Z0 + 3)}H${rail.x + rail.w - 12}`, "faint")));
   return out.join("");
 }
 
@@ -428,7 +432,9 @@ function fileBack() {
   out.push(box({ x: FILE.x, y: FILE.y, w: FILE.w, d: 2, r: 0.6 }, TRAY_Z + 1.2, 9, { tone: "hi", className: "press-file" }));
   out.push(box({ x: FILE.x, y: FILE.y + 2, w: 2, d: FILE.d - 4, r: 0.6 }, TRAY_Z + 1.2, 9, { tone: "hi", className: "press-file" }));
   for (let i = 0; i < PILE; i++) out.push(blank(FILE_X + ((i * 5) % 3) * 0.35 - 0.35, ((i * 7) % 3) * 0.35 - 0.35, TRAY_Z + 1.2 + i * T));
-  out.push(template(FILE_X - 0.35, 0.35, PILE_TOP));
+  out.push(template(FILE_X - 0.35, 0.35, PILE_TOP, { name: true, part: "pile-" }));
+  // The lid stands open behind the pile while the arm works (drawn here); closed, it is drawn in front (fileFront).
+  out.push(`<g data-part="lid-back">${lidSvg(LID_STILL)}</g>`);
   return out.join("");
 }
 function fileFront() {
@@ -438,7 +444,7 @@ function fileFront() {
   // Spine label on the front wall: the letters of this catalogue.
   const fy = FILE.y + FILE.d;
   out.push(onFront(fy, flat(rectPath(FILE_X - 9, -(TRAY_Z + 8.4), 18, 6, 0.4), "press-label") + stroke(rectPath(FILE_X - 9, -(TRAY_Z + 8.4), 18, 6, 0.4), "hi") + `<text class="press-letters" x="${FILE_X}" y="${-(TRAY_Z + 3.9)}" font-size="4" text-anchor="middle">M–N</text>`));
-  // Lift's front guide.
+  out.push(`<g data-part="lid-front"></g>`);
   return out.join("");
 }
 
@@ -485,21 +491,127 @@ function archive() {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// The moving sheet: drawn where it ends (on the pile), moved in from the feed, the press and the belt.
+// The moving sheet: drawn where it ends (on the pile); the page moves it from the feed, through the press, along
+// the belt and up in the arm's cups. Hidden in the still picture, where the pile shows the filed CV.
 function movingSheet() {
   const cx = FILE_X;
-  const cy = 0;
   const z = PILE_TOP;
-  const sheet = blank(cx, cy, z);
-  const print = `<g class="press-print">${template(cx, cy, z + T, { name: true })}</g>`;
-  const offs = {
-    "--at-feed": vec([FEED_X - cx, 0, Z - T - z]),
-    "--at-press": vec([PRESS_X - cx, 0, Z - z]),
-    "--at-end": vec([BELT_END_X - cx, 0, Z - z]),
-    "--at-over": vec([0, 0, DROP * 0.15]),
-  };
-  const style = Object.entries(offs).map(([n, v]) => `${n}:${px(v)}`).join(";");
-  return `<g class="press-sheet" style="${style}">${sheet}${print}</g>`;
+  return `<g data-part="sheet" opacity="0">${blank(cx, 0, z)}<g data-part="print">${template(cx, 0, z + T, { name: true })}</g></g>`;
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// 6. Lid: the catalogue's hinged lid on a gas strut. Drawn here at rest and by the page in motion (same maths).
+const LID = { x0: FILE.x, x1: FILE.x + FILE.w, hy: FILE.y, hz: TRAY_Z + 10.2, D: FILE.d, t: 1.6 };
+const LID_STILL = 100;
+const VIEW = G.viewOf(P);
+function lidFaces(deg) {
+  const a = (deg * Math.PI) / 180;
+  const [c, sn] = [Math.cos(a), Math.sin(a)];
+  const pt = (x, s2, h) => [x, LID.hy + s2 * c - h * sn, LID.hz + s2 * sn + h * c];
+  const { x0, x1, D: d, t } = LID;
+  const faces = [
+    ["top", [0, -sn, c], [pt(x0, 0, t), pt(x1, 0, t), pt(x1, d, t), pt(x0, d, t)]],
+    ["under", [0, sn, -c], [pt(x0, 0, 0), pt(x1, 0, 0), pt(x1, d, 0), pt(x0, d, 0)]],
+    ["edge", [0, c, sn], [pt(x0, d, 0), pt(x1, d, 0), pt(x1, d, t), pt(x0, d, t)]],
+    ["edge", [0, -c, -sn], [pt(x0, 0, 0), pt(x1, 0, 0), pt(x1, 0, t), pt(x0, 0, t)]],
+    ["side", [1, 0, 0], [pt(x1, 0, 0), pt(x1, d, 0), pt(x1, d, t), pt(x1, 0, t)]],
+  ];
+  return faces.filter(([, n]) => n[0] * VIEW[0] + n[1] * VIEW[1] + n[2] * VIEW[2] > 0.0001).map(([kind, , q]) => [kind, q]);
+}
+function lidSvg(deg) {
+  const out = lidFaces(deg).map(([kind, q]) => `<path class="press-lid-${kind}" d="${k.pathOf(q.map(at), true)}"/>`);
+  const a = (deg * Math.PI) / 180;
+  const A = [LID.x1 + 1.6, LID.hy + 22 * Math.cos(a), LID.hz + 22 * Math.sin(a)];
+  const B = [LID.x1 + 1.6, LID.hy + 18, LID.hz - 5];
+  const M = B.map((v, i) => v + (A[i] - B[i]) * 0.55);
+  out.push(`<path class="press-strut" d="${k.pathOf([at(B), at(M)])}"/><path class="press-strut-rod" d="${k.pathOf([at(M), at(A)])}"/>`);
+  return out.join("");
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// 7. Gantry: two posts, a beam with a rack, a carriage whose pinion rolls along it, a boom, and a telescopic arm
+//    with four suction cups. The page moves the carriage (and turns the pinion) and the arm.
+const CARRIAGE_HOME = BELT_END_X;
+const PINION_R = 3.6;
+function gantryBack() {
+  const out = [];
+  for (const x of GANTRY.posts) {
+    out.push(halo({ x: x - 6, y: GANTRY.y - 6, w: 12, d: 12, r: 2 }, 0, 3));
+    out.push(box({ x: x - 6, y: GANTRY.y - 6, w: 12, d: 12, r: 1.4 }, 0, 2.4, { tone: "hi" }, 3, 0.4));
+    out.push(screws([[x - 4, GANTRY.y + 4, 2.4], [x + 4, GANTRY.y + 4, 2.4]]));
+    out.push(S(k.cylinder(x, GANTRY.y, 3.2, 2.4, GANTRY.zb - 2.4, P, 24), { tone: "hi" }));
+  }
+  const beam = { x: GANTRY.x0, y: GANTRY.y - 4, w: GANTRY.x1 - GANTRY.x0, d: 8, r: 1 };
+  out.push(box(beam, GANTRY.zb, GANTRY.zt - GANTRY.zb, { tone: "hi" }, 3, 0.6));
+  // Rack along the beam's front face: teeth every 2.4, under a rule.
+  const teeth = [];
+  for (let x = beam.x + 4; x < beam.x + beam.w - 4; x += 2.4) teeth.push(`M${fine(x)} ${-(GANTRY.zb + 0.6)}L${fine(x + 0.6)} ${-(GANTRY.zb + 2.2)}L${fine(x + 1.8)} ${-(GANTRY.zb + 2.2)}L${fine(x + 2.4)} ${-(GANTRY.zb + 0.6)}`);
+  out.push(onFront(beam.y + beam.d, stroke(teeth.join(""), "lo") + stroke(`M${beam.x + 3} ${-(GANTRY.zb + 2.8)}H${beam.x + beam.w - 3}`, "faint") + stroke(`M${beam.x + 3} ${-(GANTRY.zt - 2)}H${beam.x + beam.w - 3}`, "faint")));
+  // End stops.
+  for (const x of [beam.x + 1, beam.x + beam.w - 4]) out.push(box({ x, y: beam.y - 1, w: 3, d: beam.d + 2, r: 0.4 }, GANTRY.zt, 3, { tone: "hi" }, 2));
+  return out.join("");
+}
+function gantryFront() {
+  const c = FILE_X; // drawn over the catalogue, where the still picture shows it; the page moves it
+  const out = [];
+  // The arm (moves up and down inside the tube): rod, plate, cups, and a vacuum line up to the boom.
+  const plateZ = HB_REST + 1.6;
+  const cups = [[-10, -14], [10, -14], [-10, 14], [10, 14]].map(([dx, dy]) => S(k.cylinder(c + dx, dy, 2.4, HB_REST, 1.6, P, 20), { tone: "hi", className: "press-cup" }));
+  const armSvg = [
+    S(k.cylinder(c, 0, 1.5, plateZ + 2.6, 48, P, 16), { tone: "hi" }),
+    ...cups,
+    box({ x: c - 15, y: -20, w: 30, d: 40, r: 1.6 }, plateZ, 2.6, { tone: "hi" }, 4, 0.5),
+    screws([[c - 12.5, -17.5, plateZ + 2.6], [c + 12.5, -17.5, plateZ + 2.6], [c - 12.5, 17.5, plateZ + 2.6], [c + 12.5, 17.5, plateZ + 2.6]]),
+    // Vacuum lamp on the plate: lit while the cups hold a sheet.
+    `<g data-part="vac">${S(k.cylinder(c + 8, 0, 1.6, plateZ + 2.6, 1.2, P, 16), { tone: "hi" })}</g>`,
+  ].join("");
+  const carriage = [];
+  carriage.push(`<g data-part="arm">${armSvg}</g>`);
+  // Tube below the boom.
+  carriage.push(S(k.cylinder(c, 0, 3, GANTRY.zb - 22, 28, P, 24), { tone: "hi" }));
+  carriage.push(S(k.cylinder(c, 0, 3.8, GANTRY.zb - 22, 2, P, 24, 0.4), { tone: "hi" }));
+  // Carriage on the beam, its front plate, the pinion on the rack.
+  carriage.push(box({ x: c - 9, y: GANTRY.y - 6, w: 18, d: 12, r: 1 }, GANTRY.zt, 6, { tone: "hi" }, 3, 0.5));
+  const fy = GANTRY.y + 7.4;
+  carriage.push(box({ x: c - 9, y: GANTRY.y + 6, w: 18, d: 1.4, r: 0.3 }, GANTRY.zb + 3.4, GANTRY.zt + 6 - GANTRY.zb - 3.4, { tone: "hi" }, 2));
+  const pin = gearPath(PINION_R, 10, 1);
+  carriage.push(onFront(fy + 0.01, `<g transform="translate(${c} ${-(GANTRY.zb + 2.2)})"><g data-part="gpinion">${flat(pin, "press-gear")}${stroke(pin, "hi")}${stroke("M0 0V-2.2", "lo")}<circle class="press-dot" cx="0" cy="0" r="0.6"/></g></g>` + `<circle class="press-dot" cx="${c - 7}" cy="${-(GANTRY.zt + 3.6)}" r="0.45"/><circle class="press-dot" cx="${c + 7}" cy="${-(GANTRY.zt + 3.6)}" r="0.45"/>`));
+  // Boom forward to the tube, the tube's top cap above it, and a hose loop from the carriage to the cap.
+  carriage.push(box({ x: c - 4, y: fy, w: 8, d: -fy + 5, r: 0.8 }, GANTRY.zb + 6, 6, { tone: "hi" }, 3, 0.4));
+  carriage.push(onSide(c + 4, stroke(`M${-(fy + 3)} ${-(GANTRY.zb + 9)}H${-1}`, "faint")));
+  carriage.push(S(k.cylinder(c, 0, 3, GANTRY.zb + 12, 3, P, 24, 0.4), { tone: "hi" }));
+  const hose = [at([c + 2, GANTRY.y + 2, GANTRY.zt + 6]), at([c + 6, GANTRY.y + 10, GANTRY.zt + 12]), at([c + 6, -8, GANTRY.zb + 18]), at([c + 2, -1, GANTRY.zb + 15])];
+  carriage.push(`<path class="press-hose" d="M${hose[0].map(fine).join(" ")}C${hose[1].map(fine).join(" ")} ${hose[2].map(fine).join(" ")} ${hose[3].map(fine).join(" ")}"/>`);
+  out.push(`<g data-part="carriage">${carriage.join("")}</g>`);
+  return out.join("");
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// 8. Governor on the press beam: two balls on arms spin round a spindle and swing out as it turns.
+const GOV = { x: -74, y: 18, z0: BEAM_Z + 9, h: 28, R: 10, drop: 11, ball: 3.4 };
+function governorParts(phi) {
+  const top = [GOV.x, GOV.y, GOV.z0 + GOV.h];
+  return [0, Math.PI].map((o) => {
+    const a = phi + o;
+    const ball = [GOV.x + GOV.R * Math.cos(a), GOV.y + GOV.R * Math.sin(a), top[2] - GOV.drop];
+    const mid = top.map((v, i) => (v + ball[i]) / 2);
+    const collar = [GOV.x + 1.2 * Math.cos(a), GOV.y + 1.2 * Math.sin(a), GOV.z0 + 12];
+    return { top, ball, mid, collar };
+  });
+}
+function governor() {
+  const out = [];
+  out.push(S(k.cylinder(GOV.x, GOV.y, 3.4, GOV.z0, 2.4, P, 24, 0.4), { tone: "hi" }));
+  out.push(S(k.cylinder(GOV.x, GOV.y, 0.8, GOV.z0 + 2.4, GOV.h - 2.4, P, 12), { tone: "hi" }));
+  out.push(S(k.cylinder(GOV.x, GOV.y, 2, GOV.z0 + 11.4, 1.6, P, 16), { tone: "hi" }));
+  out.push(S(k.cylinder(GOV.x, GOV.y, 1.6, GOV.z0 + GOV.h, 1.6, P, 16), { tone: "hi" }));
+  const r = GOV.ball * P.scale;
+  const parts = governorParts(0).map(({ top, ball, mid, collar }) => {
+    const [b, t, m, cl] = [ball, top, mid, collar].map(at);
+    return `<path class="press-gov-arm" d="M${t.map(fine).join(" ")}L${b.map(fine).join(" ")}"/><path class="press-gov-link" d="M${cl.map(fine).join(" ")}L${m.map(fine).join(" ")}"/><circle class="press-ball" cx="${fine(b[0])}" cy="${fine(b[1])}" r="${fine(r)}"/><circle class="press-ball-hi" cx="${fine(b[0] - r * 0.35)}" cy="${fine(b[1] - r * 0.35)}" r="${fine(r * 0.3)}"/>`;
+  });
+  out.push(`<g data-part="gov">${parts.join("")}</g>`);
+  return out.join("");
 }
 
 const body = [
@@ -508,6 +620,7 @@ const body = [
   feedBack(),
   bridge(),
   pressBack(),
+  gantryBack(),
   beltBack(),
   fileBack(),
   movingSheet(),
@@ -518,18 +631,28 @@ const body = [
   head(),
   pressFront(),
   drive(),
+  gantryFront(),
 ].join("");
 
+const O = at([0, 0, 0]);
+const axis = (v) => at(v).map((c, i) => fine((c - O[i]) * 1000) / 1000);
+const press = {
+  O: O.map(fine), EX: axis([1, 0, 0]), EY: axis([0, 1, 0]), EZ: axis([0, 0, 1]), SCALE: fine(P.scale * 1000) / 1000, VIEW: VIEW.map((v) => fine(v * 1000) / 1000),
+  Z, T, FEED_X, PRESS_X, BELT_END_X, FILE_X, PILE_TOP, STROKE: fine(STROKE), SPRING: fine(BEAM_Z - (HEAD_Z + 5 + HEAD_H)), SPRING_TOP: fine(at([PRESS_X, 0, BEAM_Z])[1]),
+  HB_REST, CARRIAGE_HOME, PINION_R, LID, LID_STILL, GOV,
+};
 const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
-  label: "An isometric drawing of a small press: a blank sheet leaves the feed tray, the press head prints the same CV layout on it, a belt carries it to an open catalogue, and finished catalogues stand in a bookcase behind it.",
+  label: "An isometric drawing of a small press: a blank sheet leaves the feed tray, the press head prints the same CV layout on it, a belt carries it to a gantry arm whose suction cups lift it into a catalogue that opens its lid, and finished catalogues stand in a bookcase behind it.",
   body,
 });
 
 const file = `// Generated by scripts/desk-hero/press.mjs. Do not edit by hand: change the build and run it again.
 /* eslint-disable */
 export const PRESS_SVG = ${JSON.stringify(svg)};
+/** What the page needs to move the parts: the camera (world → SVG) and the machine's numbers. */
+export const PRESS = ${JSON.stringify(press)} as const;
 `;
 writeFileSync(OUT, file);
 const pageAt = process.argv.find((a) => a.startsWith("--page="));
