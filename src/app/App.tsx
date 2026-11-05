@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Mail, Share2, Phone, MapPin, Linkedin, PencilLine, Eye, Globe, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
-import { TooltipProvider } from './components/ui/tooltip';
 import { ToolBadge } from './components/ToolBadge';
 import { ExperienceCard } from './components/ExperienceCard';
 import { CertificationCard } from './components/CertificationCard';
@@ -46,9 +45,7 @@ const toolLabel = 'hidden whitespace-nowrap md:inline';
 export default function App() {
   return (
     <I18nProvider>
-      <TooltipProvider>
-        <CVPage />
-      </TooltipProvider>
+      <CVPage />
     </I18nProvider>
   );
 }
