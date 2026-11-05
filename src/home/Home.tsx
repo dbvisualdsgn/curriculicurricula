@@ -180,8 +180,12 @@ export function Home() {
         {/* Opening */}
         {/* The title and the buttons, centred, then the press under them. */}
         <section className="mx-auto max-w-6xl xl:max-w-none xl:px-12 px-4 pb-20 pt-10 sm:px-8 md:pb-28 md:pt-14">
-          <div ref={heroRef} className="reveal mx-auto flex max-w-4xl flex-col items-center text-center">
-            <h1 className="font-title text-[clamp(2.25rem,10vw,3.75rem)] md:text-[clamp(3rem,6vw,6.75rem)] hyphens-auto md:hyphens-manual [overflow-wrap:break-word] font-normal leading-[0.95]">
+          <div ref={heroRef} className="reveal mx-auto flex flex-col items-center text-center">
+            {/* One line in every language: the size follows the title's length (about 0.52em per character). */}
+            <h1
+              className="whitespace-nowrap font-title font-normal leading-[0.95]"
+              style={{ fontSize: `min(6.75rem, calc((min(100vw, 1440px) - 3rem) / ${((m.homeX.claimA.length + m.homeX.claimB.length + 1) * 0.52).toFixed(2)}))` }}
+            >
               {m.homeX.claimA} <span className="hl">{m.homeX.claimB}</span>
             </h1>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
