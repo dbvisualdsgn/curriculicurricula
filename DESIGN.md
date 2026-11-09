@@ -78,7 +78,8 @@ PDF embeds the same title and text fonts.
 
 - **Section opener:** 1px ink rule and a mono title (`SectionHead`). No running numbers on the CV.
 - **CV top:** the summary follows the name, title and contacts straight away, with no rule or label: it is
-  the person's own voice. Contacts carry their icons (mail, phone, place, LinkedIn, website), on screen and in the PDF.
+  the person's own voice. It shares the name's left edge (17–18px, ≤68ch), so the top reads as one column with the
+  photo in the margin; on phones it runs full width under the photo. The PDF does the same. Contacts carry their icons (mail, phone, place, LinkedIn, website), on screen and in the PDF.
 - **Skills:** two columns side by side from `md`, Core skills and Stack & tools, each opening with its own rule
   and title, so there is no extra "Skills" row. One list alone spans both columns; on phones they stack.
 - **CV sheet:** the CV sits on one sheet with a hairline edge and a soft shadow. The sheet has no fill of its

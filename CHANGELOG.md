@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### A more compact CV
+- The summary lines up with your name, so the top of the CV reads as one column next to the photo.
 - A quieter header: smaller name, job title and photo, contacts with 16px icons.
 - The summary sits right under the name and contacts, without its own rule and title.
 - Skills are in two columns: Core skills and Stack & tools, each with its own rule and title.
