@@ -55,10 +55,6 @@ export const pt: Messages = {
   },
   download: {
     title: 'Transferir PDF',
-    designed: 'Como na página',
-    designedHint: 'Mesmo layout, fontes e foto.',
-    plain: 'ATS simples',
-    plainHint: 'Uma coluna, só texto, sem imagens. Ideal para portais de emprego.',
   },
   atsCard: {
     onlyYou: 'Só tu vês isto. Não faz parte do teu CV nem do PDF.',

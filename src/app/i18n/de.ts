@@ -55,10 +55,6 @@ export const de: Messages = {
   },
   download: {
     title: 'PDF herunterladen',
-    designed: 'Wie auf der Seite',
-    designedHint: 'Gleiches Layout, gleiche Schriften, mit Foto.',
-    plain: 'ATS-Text',
-    plainHint: 'Eine Spalte, nur Text, keine Bilder. Am besten für Jobportale.',
   },
   atsCard: {
     onlyYou: 'Nur du siehst das. Es ist nicht Teil deines Lebenslaufs oder des PDFs.',

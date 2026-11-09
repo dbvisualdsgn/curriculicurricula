@@ -37,7 +37,6 @@ import { setFaces, useTypeFaces } from './typography';
 // Read before the first render, because the library saves the sample as soon as it mounts.
 const hadSavedCV = hasSavedCV();
 
-const microLabel = 'font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft';
 // CV menu buttons: icon, with a label from md up; 44px on phones. Pressed = ink fill (the shared button states).
 const toolBtn =
   'inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-[13px] text-ink hover:bg-zinc-100 disabled:opacity-60 aria-pressed:bg-ink aria-pressed:text-paper md:h-9 md:min-w-9';
@@ -450,23 +449,20 @@ function CVPage() {
             </div>
           </div>
 
-
+          {/* The summary reads straight on from the header: no rule, no label, it is the person's own voice. */}
           {cv.summary.trim() && (
-            <RevealSection aria-labelledby="summary-heading">
-              <SectionHead id="summary-heading" title={m.sections.summary} />
-              <div className="border border-rule bg-sheet px-5 py-5 md:px-7 md:py-6 print:border-0 print:p-0">
-                <p className="max-w-[64ch] whitespace-pre-line text-lg leading-relaxed">{cv.summary}</p>
-              </div>
-            </RevealSection>
+            <section aria-label={m.sections.summary} className="-mt-2 md:-mt-4">
+              <p className="max-w-[64ch] whitespace-pre-line text-lg leading-relaxed">{cv.summary}</p>
+            </section>
           )}
 
+
           {(cv.skills.length > 0 || cv.tools.length > 0) && (
-            <RevealSection aria-labelledby="skills-heading">
-              <SectionHead id="skills-heading" title={m.sections.skills} />
-              <div className="grid gap-8 md:grid-cols-2 md:gap-10">
+            // Two columns that each open with their own rule and title, so Skills needs no extra heading row.
+            <RevealSection aria-label={m.sections.skills} className="grid gap-10 md:grid-cols-2 md:gap-x-10">
               {cv.skills.length > 0 && (
-                <div>
-                  <h3 className={`${microLabel} mb-3`}>{m.sections.coreSkills}</h3>
+                <div className={cv.tools.length === 0 ? 'md:col-span-2' : ''}>
+                  <SectionHead id="skills-heading" title={m.sections.coreSkills} />
                   <ul className="flex flex-wrap gap-2 text-[15px]">
                     {cv.skills.map((s) => (
                       <li key={s} className="rounded-sm border border-ink px-2.5 py-1">{s}</li>
@@ -475,8 +471,8 @@ function CVPage() {
                 </div>
               )}
               {cv.tools.length > 0 && (
-                <div>
-                  <h3 className={`${microLabel} mb-3`}>{m.sections.tools}</h3>
+                <div className={cv.skills.length === 0 ? 'md:col-span-2' : ''}>
+                  <SectionHead id="tools-heading" title={m.sections.tools} />
                   <ul className="flex flex-wrap gap-2">
                     {cv.tools.map((tool) => (
                       <ToolBadge key={tool.id} icon={tool.icon} name={tool.name} description={tool.description} />
@@ -484,7 +480,6 @@ function CVPage() {
                   </ul>
                 </div>
               )}
-              </div>
             </RevealSection>
           )}
 

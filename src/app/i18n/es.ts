@@ -55,10 +55,6 @@ export const es: Messages = {
   },
   download: {
     title: 'Descargar PDF',
-    designed: 'Como en la página',
-    designedHint: 'Mismo diseño, fuentes y foto.',
-    plain: 'ATS sencillo',
-    plainHint: 'Una columna, solo texto, sin imágenes. Ideal para portales de empleo.',
   },
   atsCard: {
     onlyYou: 'Solo lo ves tú. No forma parte de tu CV ni del PDF.',

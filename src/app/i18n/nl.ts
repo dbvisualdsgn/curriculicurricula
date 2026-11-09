@@ -55,10 +55,6 @@ export const nl: Messages = {
   },
   download: {
     title: 'PDF downloaden',
-    designed: 'Zoals op de pagina',
-    designedHint: 'Zelfde opmaak, lettertypes en foto.',
-    plain: 'ATS-tekst',
-    plainHint: 'Eén kolom, alleen tekst, geen afbeeldingen. Het best voor vacaturesites.',
   },
   atsCard: {
     onlyYou: 'Alleen jij ziet dit. Het hoort niet bij je cv of de PDF.',

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### A more compact CV
+- The summary sits right under the name and contacts, without its own rule and title.
+- Skills are in two columns: Core skills and Stack & tools, each with its own rule and title.
+- The PDF follows the same layout and shows the contact icons.
+- One PDF download, as on the page: the "ATS plain" version is gone.
+
 ### Appearance
 - Each CV keeps its look: the appearance and the typefaces it was edited in come back when you open it, from My CVs or from a link, and travel in the PDF.
 - The Appearance panel is simpler: no descriptions, no reset.

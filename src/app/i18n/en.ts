@@ -54,10 +54,6 @@ export const en = {
   },
   download: {
     title: 'Download PDF',
-    designed: 'As on the page',
-    designedHint: 'Same layout, fonts and photo.',
-    plain: 'ATS plain',
-    plainHint: 'One column, plain text, no images. Best for job portals.',
   },
   atsCard: {
     onlyYou: 'Only you see this. It’s not part of your CV or the PDF.',

@@ -1,7 +1,7 @@
 // "As on the page" PDF: the same layout, typefaces, paper colour, rules, logos and photo as the
 // screen, with real selectable text. Fonts are the files in /public/fonts (Switzer, Gambetta, IBM Plex
 // Mono), embedded on demand.
-import { avatarOf, contactItems, dateRange, initials } from './format';
+import { avatarOf, dateRange, displayUrl, initials } from './format';
 import type { CVData } from './types';
 import { packCV, PDF_DATA_NS } from './share';
 import { resolveLogos } from './logos';
@@ -65,6 +65,23 @@ async function rasterize(src: string, px = 96): Promise<string | undefined> {
   } catch {
     return undefined;
   }
+}
+
+// Contact icons: the same Lucide marks as the page, drawn in the soft text colour.
+const CONTACT_ICONS = {
+  email: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  phone:
+    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  location: '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  linkedin:
+    '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
+  website: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+} as const;
+type ContactKind = keyof typeof CONTACT_ICONS;
+
+function iconSvg(kind: ContactKind, color: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${CONTACT_ICONS[kind]}</svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
 export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFaces): Promise<Blob> {
@@ -169,71 +186,103 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   y += 6;
   para(profile.headline || m.app.headlinePlaceholder, BODY, 19, { width: Math.min(textWidth, 380), lead: 1.15, x: tx });
   y += 8;
-  para(contactItems(cv).join('   ·   '), SANS, 8.5, { color: C.soft, width: textWidth, x: tx });
+  // Contacts: icon + text, flowing like the page, wrapping inside the text column.
+  {
+    const p = profile;
+    const items = ([
+      ['email', p.email],
+      ['phone', p.phone],
+      ['location', p.location],
+      ['linkedin', p.linkedin && displayUrl(p.linkedin)],
+      ['website', p.website && displayUrl(p.website)],
+    ] as [ContactKind, string | undefined][]).filter(([, v]) => v) as [ContactKind, string][];
+    const icons = await Promise.all(items.map(([k]) => rasterize(iconSvg(k, C.soft), 48)));
+    font(SANS, 8.5, 'normal', C.soft);
+    const iz = 8.5;
+    const lh = 14;
+    let x = tx;
+    items.forEach(([, text], i) => {
+      const w = iz + 4 + doc.getTextWidth(text);
+      if (x > tx && x + w > W - M) {
+        x = tx;
+        y += lh;
+      }
+      const icon = icons[i];
+      if (icon) doc.addImage(icon, 'PNG', x, y + 0.6, iz, iz);
+      doc.text(text, x + iz + 4, y + 7.6);
+      x += w + 14;
+    });
+    if (items.length) y += lh;
+  }
   if (avatar !== 'none') y = Math.max(y, top + picSize + 4);
 
   // ---- Summary ----
+  // Straight on from the header, without a rule or a label.
   if (cv.summary.trim()) {
-    head(m.sections.summary);
-    para(cv.summary.trim(), BODY, 11, { width: Math.min(CW, 440), lead: 1.5 });
+    y += 18;
+    para(cv.summary.trim(), BODY, 11, { width: Math.min(CW, 460), lead: 1.5 });
   }
 
-  // ---- Skills: outlined pills + tool grid ----
+  // ---- Skills: two columns, each opening with its own rule and title (Core skills | Stack & tools) ----
   if (cv.skills.length || cv.tools.length) {
-    head(m.sections.skills);
-    if (cv.skills.length) {
-      label(m.sections.coreSkills, M, y + 6);
-      y += 14;
-      font(BODY, 9.5);
-      let x = M;
-      const ph = 18;
-      for (const s of cv.skills) {
-        const w = doc.getTextWidth(s) + 14;
-        if (x + w > W - M) {
-          x = M;
-          y += ph + 5;
+    const ph = 18;
+    const gap = 5;
+    const colGap = 24;
+    type Pill = { text: string; icon?: string; tool: boolean };
+    const groups: { title: string; pills: Pill[] }[] = [];
+    if (cv.skills.length) groups.push({ title: m.sections.coreSkills, pills: cv.skills.map((text) => ({ text, tool: false })) });
+    if (cv.tools.length) groups.push({ title: m.sections.tools, pills: cv.tools.map((t, i) => ({ text: t.name, icon: toolIcons[i], tool: true })) });
+    const colW = groups.length === 2 ? (CW - colGap) / 2 : CW;
+    // Lay the pills out first, so the block can move to the next page whole.
+    font(BODY, 9.5);
+    const laid = groups.map((g) => {
+      let x = 0;
+      let row = 0;
+      const pos = g.pills.map((p) => {
+        const w = doc.getTextWidth(p.text) + 14 + (p.tool ? 14 : 0);
+        if (x > 0 && x + w > colW) {
+          x = 0;
+          row += 1;
         }
-        ensure(ph + 5);
-        doc.setDrawColor(C.ink);
-        doc.setLineWidth(0.6);
-        doc.rect(x, y, w, ph);
-        doc.text(s, x + 7, y + 12.3);
-        x += w + 5;
-      }
-      y += ph + 18;
-    }
-    if (cv.tools.length) {
-      label(m.sections.tools, M, y + 6);
-      y += 14;
-      // Same pills as the core skills, with the logo in front of the name.
-      font(BODY, 9.5);
-      let x = M;
-      const ph = 18;
-      cv.tools.forEach((t, i) => {
-        font(BODY, 9.5);
-        const w = doc.getTextWidth(t.name) + 14 + 14;
-        if (x + w > W - M) {
-          x = M;
-          y += ph + 5;
-        }
-        ensure(ph + 5);
-        doc.setDrawColor(C.ink);
-        doc.setLineWidth(0.6);
-        doc.rect(x, y, w, ph);
-        const icon = toolIcons[i];
-        if (icon) doc.addImage(icon, 'PNG', x + 6, y + 4, 10, 10);
-        else {
-          doc.setFillColor(C.ink);
-          doc.rect(x + 6, y + 4, 10, 10, 'F');
-          font(BODY, 6.5, 'normal', C.paper);
-          doc.text(t.name.charAt(0).toUpperCase(), x + 11, y + 11.3, { align: 'center' });
-          font(BODY, 9.5);
-        }
-        doc.text(t.name, x + 20, y + 12.3);
-        x += w + 5;
+        const at = { x, row, w };
+        x += w + gap;
+        return at;
       });
-      y += ph;
-    }
+      return { ...g, pos, rows: (pos.at(-1)?.row ?? 0) + 1 };
+    });
+    const headH = 26;
+    const blockH = headH + Math.max(...laid.map((g) => g.rows)) * (ph + gap);
+    y += 26;
+    ensure(blockH);
+    const top = y;
+    laid.forEach((g, gi) => {
+      const cx = M + gi * (colW + colGap);
+      hline(cx, cx + colW, top, C.ink, 0.8);
+      font(MONO, 8, 'bold', C.ink);
+      doc.text(g.title.toUpperCase(), cx, top + 13, { charSpace: 1.1 });
+      g.pills.forEach((p, i) => {
+        const { x, row, w } = g.pos[i];
+        const px = cx + x;
+        const py = top + headH + row * (ph + gap);
+        doc.setDrawColor(C.ink);
+        doc.setLineWidth(0.6);
+        doc.rect(px, py, w, ph);
+        let textX = px + 7;
+        if (p.tool) {
+          if (p.icon) doc.addImage(p.icon, 'PNG', px + 6, py + 4, 10, 10);
+          else {
+            doc.setFillColor(C.ink);
+            doc.rect(px + 6, py + 4, 10, 10, 'F');
+            font(BODY, 6.5, 'normal', C.paper);
+            doc.text(p.text.charAt(0).toUpperCase(), px + 11, py + 11.3, { align: 'center' });
+          }
+          textX = px + 20;
+        }
+        font(BODY, 9.5);
+        doc.text(p.text, textX, py + 12.3);
+      });
+    });
+    y = top + blockH - gap;
   }
 
   // ---- Experience: ruled entries with logo tiles ----
