@@ -7,7 +7,7 @@
 - A quieter header: smaller name, job title and photo, contacts with 16px icons.
 - The summary sits right under the name and contacts, without its own rule and title.
 - Skills are in two columns: Core skills and Stack & tools, each with its own rule and title.
-- The PDF follows the same layout and shows the contact icons.
+- The PDF follows the same layout and shows the contact, education and certification icons.
 - One PDF download, as on the page: the "ATS plain" version is gone.
 - Work experience is the same size as education and certifications: smaller titles, logos and spacing.
 
