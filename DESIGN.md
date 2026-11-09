@@ -72,12 +72,15 @@ PDF embeds the same title and text fonts.
 - **Text (`font-body`):** summaries, bullets, descriptions, 16–20px, measure ≤60ch.
 - **Micro labels and dates:** IBM Plex Mono 11–12px, uppercase, tracking 0.14em, `ink-soft`. Self-hosted
   (woff2 in `src/assets/fonts`, OFL), like the text faces; Medium also serves 600–700.
-- **Brand and UI controls:** always Switzer, whatever title font is picked. The "ATS plain" PDF uses
-  Helvetica (best for parsing).
+- **Brand and UI controls:** always Switzer, whatever title font is picked. 
 
 ## Patterns
 
 - **Section opener:** 1px ink rule and a mono title (`SectionHead`). No running numbers on the CV.
+- **CV top:** the summary follows the name, title and contacts straight away, with no rule or label: it is
+  the person's own voice. Contacts carry their icons (mail, phone, place, LinkedIn, website), on screen and in the PDF.
+- **Skills:** two columns side by side from `md`, Core skills and Stack & tools, each opening with its own rule
+  and title, so there is no extra "Skills" row. One list alone spans both columns; on phones they stack.
 - **CV sheet:** the CV sits on one sheet with a hairline edge and a soft shadow. The sheet has no fill of its
   own colour: `--sheet`, the page's tone 40% closer to white (Paper and Color; white in Classic), so the CV is always the lightest thing on the page and the PDF uses the same colour. It follows the chosen Appearance, so each CV looks like its own setting, not one fixed white. Print drops the sheet. Next to the name, on the left, the person picks nothing,
   their initials (a black square) or a photo (square, no rounding, grayscale, 480px). The PDF follows the same choice.
