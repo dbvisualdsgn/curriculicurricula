@@ -214,14 +214,12 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
     });
     if (items.length) y += lh;
   }
-  if (avatar !== 'none') y = Math.max(y, top + picSize + 4);
-
-  // ---- Summary ----
-  // Straight on from the header, without a rule or a label.
+  // ---- Summary: shares the name's left edge, like the page (one column, the photo in the margin) ----
   if (cv.summary.trim()) {
-    y += 18;
-    para(cv.summary.trim(), BODY, 11, { width: Math.min(CW, 460), lead: 1.5 });
+    y += 12;
+    para(cv.summary.trim(), BODY, 10.5, { width: Math.min(textWidth, 420), lead: 1.55, x: tx });
   }
+  if (avatar !== 'none') y = Math.max(y, top + picSize + 4);
 
   // ---- Skills: two columns, each opening with its own rule and title (Core skills | Stack & tools) ----
   if (cv.skills.length || cv.tools.length) {

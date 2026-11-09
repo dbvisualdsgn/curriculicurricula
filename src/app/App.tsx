@@ -404,7 +404,7 @@ function CVPage() {
         >
           {/* The sheet: one page on the desk, in the paper the person chose (no fill of its own). */}
           <div className="space-y-10 border border-rule bg-sheet px-5 py-8 shadow-[0_1px_0_var(--rule),0_12px_32px_-18px_rgb(0_0_0/0.25)] sm:px-10 md:space-y-12 md:px-14 md:py-14 print:space-y-8 print:border-0 print:bg-transparent print:p-0 print:shadow-none">
-          <div className="grid items-start gap-5 sm:grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] sm:items-center sm:gap-7 md:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] md:gap-8">
+          <div className="grid items-start gap-5 sm:grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] sm:gap-7 md:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] md:gap-8">
             {avatar !== 'none' && (
               <Portrait
                 photo={avatar === 'photo' ? profile.photo : undefined}
@@ -446,15 +446,16 @@ function CVPage() {
                 })}
               </ul>
             </address>
+            {/* The summary shares the name's left edge, so the whole top reads as one column with the photo in the margin.
+                No rule, no label: it is the person's own voice. */}
+            {cv.summary.trim() && (
+              <section aria-label={m.sections.summary} className="mt-6 md:mt-7">
+                <p className="max-w-[68ch] whitespace-pre-line text-pretty text-[17px] leading-[1.65] md:text-lg md:leading-[1.6]">{cv.summary}</p>
+              </section>
+            )}
             </div>
           </div>
 
-          {/* The summary reads straight on from the header: no rule, no label, it is the person's own voice. */}
-          {cv.summary.trim() && (
-            <section aria-label={m.sections.summary} className="-mt-2 md:-mt-4">
-              <p className="max-w-[64ch] whitespace-pre-line text-lg leading-relaxed">{cv.summary}</p>
-            </section>
-          )}
 
 
           {(cv.skills.length > 0 || cv.tools.length > 0) && (
