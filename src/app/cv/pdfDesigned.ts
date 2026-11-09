@@ -163,8 +163,8 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   // ---- Header: square photo or initials on the left, then name, headline (in the text face), contacts ----
   const { profile } = cv;
   const avatar = avatarOf(profile);
-  const picSize = 76;
-  const tx = avatar === 'none' ? M : M + picSize + 20;
+  const picSize = 64;
+  const tx = avatar === 'none' ? M : M + picSize + 18;
   const textWidth = W - M - tx;
   const top = y;
   if (avatar === 'photo') {
@@ -174,18 +174,18 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   if (avatar === 'initials') {
     doc.setFillColor(C.ink);
     doc.rect(M, y, picSize, picSize, 'F');
-    font(TITLE, 30, 'normal', C.paper);
-    doc.text(initials(profile.name), M + 7, y + picSize - 8);
+    font(TITLE, 24, 'normal', C.paper);
+    doc.text(initials(profile.name), M + 6, y + picSize - 7);
   }
-  font(TITLE, 34, 'normal');
+  font(TITLE, 26, 'normal');
   const nameLines: string[] = doc.splitTextToSize(profile.name || m.app.namePlaceholder, textWidth);
   for (const line of nameLines) {
-    doc.text(line, tx, y + 28);
-    y += 33;
+    doc.text(line, tx, y + 21);
+    y += 25;
   }
+  y += 4;
+  para(profile.headline || m.app.headlinePlaceholder, BODY, 14, { width: Math.min(textWidth, 380), lead: 1.2, x: tx });
   y += 6;
-  para(profile.headline || m.app.headlinePlaceholder, BODY, 19, { width: Math.min(textWidth, 380), lead: 1.15, x: tx });
-  y += 8;
   // Contacts: icon + text, flowing like the page, wrapping inside the text column.
   {
     const p = profile;

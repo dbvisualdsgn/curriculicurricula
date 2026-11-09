@@ -404,25 +404,25 @@ function CVPage() {
         >
           {/* The sheet: one page on the desk, in the paper the person chose (no fill of its own). */}
           <div className="space-y-10 border border-rule bg-sheet px-5 py-8 shadow-[0_1px_0_var(--rule),0_12px_32px_-18px_rgb(0_0_0/0.25)] sm:px-10 md:space-y-12 md:px-14 md:py-14 print:space-y-8 print:border-0 print:bg-transparent print:p-0 print:shadow-none">
-          <div className="grid items-start gap-6 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)] sm:gap-8 md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-10">
+          <div className="grid items-start gap-5 sm:grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] sm:items-center sm:gap-7 md:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] md:gap-8">
             {avatar !== 'none' && (
               <Portrait
                 photo={avatar === 'photo' ? profile.photo : undefined}
                 name={name}
                 alt={fmt(m.photo.alt, { name })}
-                className="aspect-square w-32 text-[3.5rem] sm:w-full md:text-[5rem]"
+                className="aspect-square w-24 text-[2.5rem] sm:w-full md:text-[3.25rem]"
               />
             )}
             <div className={`min-w-0 ${avatar === 'none' ? 'sm:col-span-2' : ''}`}>
-                <h1 className="font-title text-[clamp(2.25rem,7vw,4.75rem)] hyphens-auto [overflow-wrap:anywhere] font-normal leading-[0.92] tracking-[-0.035em]">{name}</h1>
+                <h1 className="font-title text-[clamp(2rem,4.6vw,3.25rem)] hyphens-auto [overflow-wrap:anywhere] font-normal leading-[0.92] tracking-[-0.035em]">{name}</h1>
                 {/* The job title is set in the text face, not the title face: a second voice that can run long and still read. */}
-                <p className="mt-4 max-w-[30ch] text-balance font-body text-[clamp(1.5rem,3.4vw,2.5rem)] leading-[1.15] tracking-[-0.01em] text-ink">{headline}</p>
-            <address className="mt-6 not-italic">
-              <ul className="flex flex-wrap gap-x-6 gap-y-2 font-sans text-[14px] text-ink-soft">
+                <p className="mt-2 max-w-[36ch] text-balance font-body text-[clamp(1.125rem,2vw,1.5rem)] leading-[1.2] tracking-[-0.01em] text-ink">{headline}</p>
+            <address className="mt-4 not-italic">
+              <ul className="flex flex-wrap gap-x-5 gap-y-1.5 font-sans text-[14px] text-ink-soft">
                 {contacts.map(({ icon: Icon, kind, label, href }) => {
                   const content = (
                     <>
-                      <Icon size={20} aria-hidden="true" className="shrink-0" />
+                      <Icon size={16} aria-hidden="true" className="shrink-0" />
                       <span className="sr-only">{kind}: </span>
                       <span className="break-all">{label}</span>
                     </>
