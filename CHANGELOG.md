@@ -7,6 +7,7 @@
 - Skills are in two columns: Core skills and Stack & tools, each with its own rule and title.
 - The PDF follows the same layout and shows the contact icons.
 - One PDF download, as on the page: the "ATS plain" version is gone.
+- Work experience is the same size as education and certifications: smaller titles, logos and spacing.
 
 ### Appearance
 - Each CV keeps its look: the appearance and the typefaces it was edited in come back when you open it, from My CVs or from a link, and travel in the PDF.

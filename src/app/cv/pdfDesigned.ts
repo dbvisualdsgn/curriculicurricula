@@ -289,32 +289,32 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   if (cv.experience.length) {
     head(m.sections.experience);
     cv.experience.forEach((e, i) => {
-      ensure(70);
+      ensure(60);
       if (i > 0) {
         hline(M, W - M, y);
-        y += 16;
+        y += 12;
       }
-      const tx = M + 38;
+      const tx = M + 32;
       const logo = expLogos[i];
-      if (logo) doc.addImage(logo, 'PNG', M, y, 26, 26);
+      if (logo) doc.addImage(logo, 'PNG', M, y, 22, 22);
       else {
         doc.setFillColor(C.ink);
-        doc.rect(M, y, 26, 26, 'F');
-        font(TITLE, 12, 'normal', C.paper);
-        doc.text((e.company || '?').charAt(0).toUpperCase(), M + 13, y + 17.5, { align: 'center' });
+        doc.rect(M, y, 22, 22, 'F');
+        font(TITLE, 10, 'normal', C.paper);
+        doc.text((e.company || '?').charAt(0).toUpperCase(), M + 11, y + 14.8, { align: 'center' });
       }
       const dates = dateRange(e.start, e.end);
       font(MONO, 8, 'normal', C.soft);
       const dw = dates ? doc.getTextWidth(dates) + 12 : 0;
-      if (dates) doc.text(dates, W - M, y + 11, { align: 'right' });
+      if (dates) doc.text(dates, W - M, y + 9, { align: 'right' });
       const top = y;
-      para(e.title, TITLE, 13, { width: CW - 38 - dw, x: tx, lead: 1.25, style: 'bold' });
-      y = Math.max(y, top + 17);
-      para([e.company, e.location, e.employmentType].filter(Boolean).join(' · '), SANS, 8.5, { color: C.soft, x: tx, width: CW - 38 });
+      para(e.title, TITLE, 11.5, { width: CW - 32 - dw, x: tx, lead: 1.3, style: 'bold' });
+      y = Math.max(y, top + 15);
+      para([e.company, e.location, e.employmentType].filter(Boolean).join(' · '), SANS, 8.5, { color: C.soft, x: tx, width: CW - 32 });
       y += 5;
       e.bullets.filter((b) => b.trim()).forEach((b) => {
         font(BODY, 10);
-        const lines: string[] = doc.splitTextToSize(b.trim(), CW - 38 - 12);
+        const lines: string[] = doc.splitTextToSize(b.trim(), CW - 32 - 12);
         lines.forEach((line, j) => {
           ensure(14.5);
           if (j === 0) {
@@ -326,7 +326,7 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
           y += 14.5;
         });
       });
-      y += 10;
+      y += 8;
     });
   }
 
