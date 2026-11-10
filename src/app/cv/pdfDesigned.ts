@@ -67,7 +67,7 @@ async function rasterize(src: string, px = 96): Promise<string | undefined> {
   }
 }
 
-// Contact icons: the same Lucide marks as the page, drawn in the soft text colour.
+// Contact, education and certification icons: the same Lucide marks as the page, drawn in the soft text colour.
 const CONTACT_ICONS = {
   email: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
   phone:
@@ -76,6 +76,10 @@ const CONTACT_ICONS = {
   linkedin:
     '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
   website: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  education:
+    '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+  award:
+    '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
 } as const;
 type ContactKind = keyof typeof CONTACT_ICONS;
 
@@ -329,9 +333,15 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
   }
 
   // ---- Education & certifications: ruled rows ----
-  const rows = (title: string, items: { title: string; meta: string; year: string }[]) => {
+  // Each row opens with its icon (graduation cap, award), like the page; text lines up with the experience entries.
+  const rowIcons = {
+    education: await rasterize(iconSvg('education', C.soft), 48),
+    award: await rasterize(iconSvg('award', C.soft), 48),
+  };
+  const rows = (title: string, kind: 'education' | 'award', items: { title: string; meta: string; year: string }[]) => {
     if (!items.length) return;
     head(title);
+    const rx = M + 32;
     items.forEach((it, i) => {
       ensure(40);
       if (i > 0) {
@@ -342,13 +352,15 @@ export async function buildDesignedPdf(input: CVData, m: Messages, faces: TypeFa
         font(MONO, 8, 'normal', C.soft);
         doc.text(it.year, W - M, y + 9, { align: 'right' });
       }
-      para(it.title, TITLE, 11.5, { width: CW - 90, style: 'bold', lead: 1.3 });
-      if (it.meta) para(it.meta, SANS, 8.5, { color: C.soft, width: CW - 90 });
+      const icon = rowIcons[kind];
+      if (icon) doc.addImage(icon, 'PNG', M + 1, y + 1, 12, 12);
+      para(it.title, TITLE, 11.5, { width: CW - 32 - 90, x: rx, style: 'bold', lead: 1.3 });
+      if (it.meta) para(it.meta, SANS, 8.5, { color: C.soft, width: CW - 32 - 90, x: rx });
       y += 8;
     });
   };
-  rows(m.sections.education, cv.education.map((e) => ({ title: e.degree, meta: [e.school, e.location, e.details].filter(Boolean).join(' · '), year: dateRange(e.start, e.end) })));
-  rows(m.sections.certifications, cv.certifications.map((c) => ({ title: c.title, meta: [c.description, c.issuer].filter(Boolean).join(' · '), year: c.year })));
+  rows(m.sections.education, 'education', cv.education.map((e) => ({ title: e.degree, meta: [e.school, e.location, e.details].filter(Boolean).join(' · '), year: dateRange(e.start, e.end) })));
+  rows(m.sections.certifications, 'award', cv.certifications.map((c) => ({ title: c.title, meta: [c.description, c.issuer].filter(Boolean).join(' · '), year: c.year })));
 
   // ---- Languages: hairline grid ----
   if (cv.languages.length) {
